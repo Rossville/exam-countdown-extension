@@ -4,7 +4,11 @@ This extension provides countdown timers for the JEE and NEET exams, allowing us
 
 ## Installation
 
-soon ....
+1. **Download** the `.zip` from [Releases](https://github.com/NovatraX/jee-neet-extension/releases/).
+2. **Extract** it to a folder.
+3. Open `chrome://extensions/`.
+4. **Enable Developer Mode** (top right).
+5. Click **"Load unpacked"** and select the extracted folder.
 
 ## Features
 
