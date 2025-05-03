@@ -49,7 +49,7 @@ function updateDateTime() {
     const formattedDate = now.toLocaleDateString("en-US", dateOptions);
     currentDateElement.textContent = formattedDate;
 
-    const timeOptions = { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true };
+    const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
     const formattedTime = now.toLocaleTimeString("en-US", timeOptions);
     currentTimeElement.textContent = formattedTime;
 }
