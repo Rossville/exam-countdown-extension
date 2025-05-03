@@ -1,4 +1,4 @@
-const jeeExamDate = new Date(2026, 0, 5); // Example: January 5, 2026
+const jeeExamDate = new Date(2026, 0, 29); // January 5, 2026
 const neetExamDate = new Date(2025, 4, 4); // May 4, 2025
 const jeeAdvExamDate = new Date(2025, 4, 18); // June 18, 2025
 
