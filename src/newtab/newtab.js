@@ -133,9 +133,11 @@ function setupEventListeners() {
     const neetDate = document.getElementById("neet-date");
     const jeeAdvDate = document.getElementById("jeeadv-date");
 
-    if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString();
-    if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString();
-    if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString();
+    const dateOptions = { year: "numeric", month: "long", day: "numeric" };
+
+    if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
+    if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
+    if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
 
     const showOptionsModal = function () {
         chrome.storage.sync.get(["activeExam"], function (data) {
