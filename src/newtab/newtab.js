@@ -183,6 +183,7 @@ function setupEventListeners() {
                     setTimeout(function () {
                         saveMessage.textContent = "";
                     }, 3000);
+                    optionsModal.close();
                 }
             );
         });
