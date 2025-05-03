@@ -1,7 +1,13 @@
 {
-  "manifest_version": 3,
+  "firefox:applications": {
+    "gecko": {
+      "id": "support@novatra.in"
+    }
+  },
+  "chrome:manifest_version": 3,
+  "firefox:manifest_version": 2,
   "version": "1.0",
-  "name": "jee-neet-countdown",
+  "name": "Exam Countdown",
   "description": "A Countdown New Tab Extension For JEE And NEET Aspirants",
   "author": "SpreadSheets600",
   "permissions": [
@@ -9,36 +15,41 @@
     "storage",
     "tabs"
   ],
-  "host_permissions": [
+  "firefox:content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "chrome:content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "firefox:background": {
+    "scripts": [
+      "src/background.js"
+    ],
+    "persistent": false
+  },
+  "chrome:background": {
+    "service_worker": "src/background.js"
+  },
+  "chrome:host_permissions": [
     "<all_urls>"
   ],
-  "background": {
-    "chromium:service_worker": "src/background.js",
-    "firefox:scripts": [
-      "src/background.js"
-    ]
+  "icons": {
+    "16": "src/icons/icon16.png",
+    "32": "src/icons/icon32.png",
+    "48": "src/icons/icon48.png",
+    "96": "src/icons/icon96.png",
+    "128": "src/icons/icon128.png"
   },
-  "action": {
-    "default_popup": "src/popup/popup.html"
+  "browser_action": {
+    "default_icon": {
+      "16": "src/icons/icon16.png",
+      "32": "src/icons/icon32.png",
+      "48": "src/icons/icon48.png",
+      "96": "src/icons/icon96.png",
+      "128": "src/icons/icon128.png"
+    },
+    "default_popup": "src/popup/popup.html",
+    "default_title": "Exam Countdown"
   },
   "chrome_url_overrides": {
     "newtab": "src/newtab/newtab.html"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "src/common/countdown-data.js",
-        "src/newtab/newtab.html",
-        "src/newtab/newtab.js",
-        "src/newtab/newtab.css",
-        "src/popup/popup.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ],
-      "css": [
-        "src/style.css"
-      ]
-    }
-  ]
+  }
 }
