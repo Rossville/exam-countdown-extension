@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@tailwind utilities;
+
 .background {
     position: fixed;
     top: 0;
