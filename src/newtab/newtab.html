@@ -7,7 +7,7 @@
         <title>New tab</title>
         <style></style>
     </head>
-    <body class="min-h-screen flex flex-col overflow-hidden font-sans">
+    <body class="min-h-screen flex flex-col font-sans">
         <div class="background"></div>
 
         <!-- Main Container -->
@@ -29,8 +29,8 @@
 
                 <!-- Date And Time -->
                 <div class="px-4 py-2 rounded-full text-right">
-                    <div id="current-time" class="text-2xl font-bold text-white tracking-wide"></div>
-                    <div id="current-date" class="text-sm text-white opacity-80"></div>
+                    <div id="current-time" class="text-2xl font-bold tracking-wide"></div>
+                    <div id="current-date" class="text-sm opacity-80"></div>
                 </div>
             </header>
 
@@ -79,11 +79,11 @@
             <!-- Footer -->
             <footer class="flex justify-between items-end w-full mt-auto pb-4">
                 <div class="quote-container max-w-md p-4 rounded-lg">
-                    <p id="quote-text" class="text-white text-lg italic"></p>
-                    <p id="quote-author" class="text-white opacity-70 mt-2 text-right font-medium"></p>
+                    <p id="quote-text" class="text-lg italic"></p>
+                    <p id="quote-author" class="opacity-70 mt-2 text-right font-medium"></p>
                 </div>
                 <div class="p-3 rounded-lg text-right">
-                    <a href="https://novatra.in" target="_blank" rel="noopener" class="font-bold text-2xl">ηovatra</a>
+                    <a id="novatra-link" href="https://novatra.in" target="_blank" rel="noopener" class="font-bold text-2xl">ηovatra</a>
                 </div>
             </footer>
         </div>
@@ -104,8 +104,10 @@
                             <div id="neet-date" class="stat-value text-lg">Loading ...</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-title">JEE Main</div>
-                            <div id="jee-date" class="stat-value text-lg">Loading ...</div>
+                            <div class="tooltip" data-tip="Tentative Date">
+                                <div class="stat-title">JEE Main</div>
+                                <div id="jee-date" class="stat-value text-lg">Loading ...</div>
+                            </div>
                         </div>
                         <div class="stat">
                             <div class="stat-title">JEE Advanced</div>
@@ -124,6 +126,23 @@
                             <option value="jeeAdv">JEE Advanced</option>
                         </select>
                     </div>
+                    <!-- Custom Wallpaper Input -->
+                    <h4 class="font-semibold mb-3">Custom Wallpaper URL</h4>
+                    <div class="form-control mb-3">
+                        <input type="url" id="custom-wallpaper" placeholder="Paste image link here" class="input input-bordered w-full focus:outline-none" />
+                    </div>
+                    <div class="text-xs mb-6 opacity-70">Leave empty to use random wallpapers</div>
+
+                    <!-- Background Brightness Slider -->
+                    <h4 class="font-semibold mb-3">Background Brightness</h4>
+                    <div class="form-control mb-2">
+                        <input type="range" id="brightness-slider" class="range range-xs w-full" min="0.1" max="0.9" step="0.05" value="0.4" />
+                    </div>
+                    <div class="flex justify-between text-xs opacity-70 mb-6">
+                        <span>Darker</span>
+                        <span>Brighter</span>
+                    </div>
+
                     <div class="modal-action">
                         <button type="submit" class="btn btn-primary btn-block">Save Preferences</button>
                     </div>

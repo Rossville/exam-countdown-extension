@@ -20,9 +20,11 @@ const optionsLink = document.getElementById("options-link");
 const themeToggle = document.getElementById("theme-toggle");
 const changeExamBtn = document.getElementById("change-exam-btn");
 
-const backgrounds = ["https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=1920", "https://images.unsplash.com/photo-1501349800519-48093d60bde0?q=80&w=1920", "https://images.unsplash.com/photo-1471970394675-613138e45da3?q=80&w=1920", "https://images.unsplash.com/photo-1510070009289-b5bc34383727?q=80&w=1920", "https://images.unsplash.com/photo-1555116505-38ab61800975?q=80&w=1920"];
+const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
-let currentExam = "jee";
+let currentExam = "jeeAdv";
+let customWallpaper = "";
+let backgroundBrightness = 0.4; // Default brightness value
 
 const motivationalQuotes = [
     { text: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
@@ -58,7 +60,6 @@ function displayRandomQuote() {
     const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
     const quote = motivationalQuotes[randomIndex];
 
-    // Add a subtle fade effect
     quoteTextElement.style.opacity = 0;
     quoteAuthorElement.style.opacity = 0;
 
@@ -71,17 +72,38 @@ function displayRandomQuote() {
     }, 300);
 }
 
-function setRandomBackground() {
-    const randomIndex = Math.floor(Math.random() * backgrounds.length);
+function setBackground() {
     const backgroundElement = document.querySelector(".background");
 
-    if (backgroundElement) {
-        backgroundElement.style.opacity = 0;
+    if (!backgroundElement) return;
 
-        setTimeout(() => {
+    backgroundElement.style.opacity = 0;
+    document.documentElement.style.setProperty("--bg-brightness", backgroundBrightness);
+
+    setTimeout(() => {
+        if (customWallpaper) {
+            backgroundElement.style.backgroundImage = `url(${customWallpaper})`;
+        } else {
+            const randomIndex = Math.floor(Math.random() * backgrounds.length);
             backgroundElement.style.backgroundImage = `url(${backgrounds[randomIndex]})`;
-            backgroundElement.style.opacity = 1;
-        }, 500);
+        }
+        backgroundElement.style.opacity = 1;
+    }, 500);
+}
+
+function setRandomBackground() {
+    if (!customWallpaper) {
+        const backgroundElement = document.querySelector(".background");
+
+        if (backgroundElement) {
+            backgroundElement.style.opacity = 0;
+
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * backgrounds.length);
+                backgroundElement.style.backgroundImage = `url(${backgrounds[randomIndex]})`;
+                backgroundElement.style.opacity = 1;
+            }, 500);
+        }
     }
 }
 
@@ -123,9 +145,12 @@ function updateCountdown() {
         countdownSecondsElement.style = `--value:${timeRemaining.seconds}`;
     }
 }
+
 function setupEventListeners() {
-    const optionsModal = document.getElementById("options-modal");
+    const customWallpaperInput = document.getElementById("custom-wallpaper");
+    const brightnessSlider = document.getElementById("brightness-slider");
     const preferencesForm = document.getElementById("preferences-form");
+    const optionsModal = document.getElementById("options-modal");
     const examSelector = document.getElementById("exam-selector");
     const saveMessage = document.getElementById("save-message");
 
@@ -138,20 +163,28 @@ function setupEventListeners() {
     if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
-
     const showOptionsModal = function () {
-        chrome.storage.sync.get(["activeExam"], function (data) {
+        chrome.storage.sync.get(["activeExam", "customWallpaper", "backgroundBrightness"], function (data) {
             const activeExam = data.activeExam || "jee";
 
             examSelector.value = activeExam;
 
+            if (data.customWallpaper) {
+                customWallpaperInput.value = data.customWallpaper;
+            } else {
+                customWallpaperInput.value = "";
+            }
+
+            // Set the brightness slider value
+            if (data.backgroundBrightness !== undefined) {
+                brightnessSlider.value = data.backgroundBrightness;
+            } else {
+                brightnessSlider.value = 0.4; // Default value
+            }
+
             optionsModal.showModal();
         });
     };
-
-    if (changeExamBtn) {
-        changeExamBtn.addEventListener("click", showOptionsModal);
-    }
 
     if (optionsLink) {
         optionsLink.addEventListener("click", showOptionsModal);
@@ -166,21 +199,28 @@ function setupEventListeners() {
             }
         });
     }
-
     if (preferencesForm) {
         preferencesForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
             let activeExam = examSelector.value;
+            let wallpaperUrl = customWallpaperInput.value.trim();
+            let brightness = parseFloat(brightnessSlider.value);
 
             chrome.storage.sync.set(
                 {
                     activeExam: activeExam,
+                    customWallpaper: wallpaperUrl,
+                    backgroundBrightness: brightness,
                 },
                 function () {
                     saveMessage.textContent = "Preferences Saved!";
 
                     setActiveExam(activeExam);
+
+                    customWallpaper = wallpaperUrl;
+                    backgroundBrightness = brightness;
+                    setBackground();
 
                     setTimeout(function () {
                         saveMessage.textContent = "";
@@ -190,11 +230,39 @@ function setupEventListeners() {
             );
         });
     }
+
+    // Live preview of brightness changes
+    if (brightnessSlider) {
+        brightnessSlider.addEventListener("input", function () {
+            document.documentElement.style.setProperty("--bg-brightness", this.value);
+        });
+    }
+}
+
+function updateNovatraLink(exam) {
+    const novatraLink = document.getElementById("novatra-link");
+    if (!novatraLink) return;
+
+    switch (exam) {
+        case "jee":
+            novatraLink.href = "https://novatra.in/exams/jee-main/";
+            break;
+        case "jeeAdv":
+            novatraLink.href = "https://novatra.in/exams/jee-advanced/";
+            break;
+        case "neet":
+            novatraLink.href = "https://novatra.in/exams/neet/";
+            break;
+        default:
+            novatraLink.href = "https://novatra.in/";
+            break;
+    }
 }
 
 function setActiveExam(exam) {
     currentExam = exam;
     updateCountdown();
+    updateNovatraLink(exam);
 
     if (chrome.storage) {
         chrome.storage.sync.set({ activeExam: exam });
@@ -203,20 +271,35 @@ function setActiveExam(exam) {
 
 function loadUserPreferences() {
     if (chrome.storage) {
-        chrome.storage.sync.get(["theme", "activeExam"], function (data) {
+        chrome.storage.sync.get(["theme", "activeExam", "customWallpaper", "backgroundBrightness"], function (data) {
             if (data.theme) {
                 document.documentElement.dataset.theme = data.theme;
             }
 
             if (data.activeExam) {
                 setActiveExam(data.activeExam);
+            } else {
+                // If no exam is selected, at least update the link
+                updateNovatraLink(currentExam);
             }
+
+            if (data.customWallpaper) {
+                customWallpaper = data.customWallpaper;
+            }
+
+            if (data.backgroundBrightness !== undefined) {
+                backgroundBrightness = data.backgroundBrightness;
+            }
+
+            setBackground();
         });
+    } else {
+        updateNovatraLink(currentExam);
+        setBackground();
     }
 }
 
 function initializePage() {
-    setRandomBackground();
     updateDateTime();
     displayRandomQuote();
     setupEventListeners();
@@ -226,7 +309,12 @@ function initializePage() {
     setInterval(updateDateTime, 1000);
     setInterval(updateCountdown, 1000);
     setInterval(displayRandomQuote, 3600000);
-    setInterval(setRandomBackground, 1800000);
+
+    setInterval(() => {
+        if (!customWallpaper) {
+            setRandomBackground();
+        }
+    }, 1800000);
 }
 
 document.addEventListener("DOMContentLoaded", initializePage);
