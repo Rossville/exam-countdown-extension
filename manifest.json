@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/chrome-manifest.json",
+  "manifest_version": 3,
+  "version": "1.0",
+  "name": "jee-neet-countdown",
+  "description": "A Countdown New Tab Extension For JEE And NEET Aspirants",
+  "author": "SpreadSheets600",
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "action": {
+    "default_popup": "src/popup/popup.html"
+  },
+  "chrome_url_overrides": {
+    "newtab": "src/newtab/newtab.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/common/countdown-data.js",
+        "src/newtab/newtab.html",
+        "src/newtab/newtab.js",
+        "src/newtab/newtab.css",
+        "src/popup/popup.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "css": [
+        "src/style.css"
+      ]
+    }
+  ]
+}
