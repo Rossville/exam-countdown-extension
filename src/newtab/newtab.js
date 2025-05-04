@@ -275,7 +275,7 @@ function setupEventListeners() {
         const youtubeUrlInput = document.getElementById("youtube-url");
         const youtubeEmbed = document.getElementById("youtube-embed");
 
-        const defaultYoutubeUrl = "https://www.youtube.com/watch?v=jfKfPfyJRdk";
+        const defaultYoutubeUrl = "https://www.youtube.com/watch?v=n61ULEU7CO0";
         musicBtn.addEventListener("click", function () {
             musicModal.showModal();
 
@@ -321,7 +321,7 @@ function setupEventListeners() {
                 youtubeEmbed.classList.remove("hidden");
 
                 const videoId = youtubeMatch[1];
-                const embedUrl = `https://www.youtube.com/embed/${videoId}?si=Y_vXpY6wIItrmI9x`;
+                const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?si=Y_vXpY6wIItrmI9x`;
                 youtubeEmbed.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
             } 
             else {
