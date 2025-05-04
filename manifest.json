@@ -8,12 +8,10 @@
   "firefox:manifest_version": 2,
   "version": "1.1",
   "name": "Exam Countdown",
-  "description": "A Countdown New Tab Extension For JEE And NEET Aspirants",
+  "description": "A New Tab Countdown Extension",
   "author": "SpreadSheets600",
   "permissions": [
-    "scripting",
-    "storage",
-    "tabs"
+    "storage"
   ],
   "firefox:content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "chromium:content_security_policy": {
@@ -28,9 +26,6 @@
   "chromium:background": {
     "service_worker": "src/background.js"
   },
-  "chromium:host_permissions": [
-    "<all_urls>"
-  ],
   "icons": {
     "16": "src/icons/icon16.png",
     "32": "src/icons/icon32.png",
