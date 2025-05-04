@@ -17,6 +17,9 @@ This extension provides countdown timers for the JEE and NEET exams, allowing us
 - Popup interface for quick access to countdowns.
 - Option to open countdowns in a new tab.
 - Simple and user-friendly design.
+- Add and track your own personalized exam dates alongside the predefined ones
+- Play any spotify playlist/music or youtube video as background music.
+
 
 ## Usage
 
