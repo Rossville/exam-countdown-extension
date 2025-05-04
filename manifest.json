@@ -4,9 +4,9 @@
       "id": "support@novatra.in"
     }
   },
-  "chrome:manifest_version": 3,
+  "chromium:manifest_version": 3,
   "firefox:manifest_version": 2,
-  "version": "1.0",
+  "version": "1.1",
   "name": "Exam Countdown",
   "description": "A Countdown New Tab Extension For JEE And NEET Aspirants",
   "author": "SpreadSheets600",
@@ -16,7 +16,7 @@
     "tabs"
   ],
   "firefox:content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "chrome:content_security_policy": {
+  "chromium:content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "firefox:background": {
@@ -25,10 +25,10 @@
     ],
     "persistent": false
   },
-  "chrome:background": {
+  "chromium:background": {
     "service_worker": "src/background.js"
   },
-  "chrome:host_permissions": [
+  "chromium:host_permissions": [
     "<all_urls>"
   ],
   "icons": {
@@ -38,7 +38,7 @@
     "96": "src/icons/icon96.png",
     "128": "src/icons/icon128.png"
   },
-  "chrome:action": {
+  "chromium:action": {
     "default_icon": {
       "16": "src/icons/icon16.png",
       "32": "src/icons/icon32.png",
