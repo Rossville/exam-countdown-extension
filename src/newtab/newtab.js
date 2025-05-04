@@ -18,14 +18,13 @@ const examBadgeElement = document.getElementById("exam-badge");
 
 const optionsLink = document.getElementById("options-link");
 const themeToggle = document.getElementById("theme-toggle");
-const changeExamBtn = document.getElementById("change-exam-btn");
+const musicBtn = document.getElementById("music-btn");
 
 var storage;
 
 if (process.env.EXTENSION_PUBLIC_BROWSER == "firefox") {
     storage = browser.storage.sync;
-}
-else {
+} else {
     storage = chrome.storage.sync;
 }
 
@@ -173,33 +172,30 @@ function setupEventListeners() {
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
-        storage.get().then(
-            data => {
-                const activeExam = data.activeExam || "jee";
+        storage.get().then((data) => {
+            const activeExam = data.activeExam || "jee";
 
-                examSelector.value = activeExam;
+            examSelector.value = activeExam;
 
-                if (data.customWallpaper) {
-                    customWallpaperInput.value = data.customWallpaper;
-                } else {
-                    customWallpaperInput.value = "";
-                }
-
-                if (data.backgroundBrightness !== undefined) {
-                    brightnessSlider.value = data.backgroundBrightness;
-                } else {
-                    brightnessSlider.value = 0.4;
-                }
-
-                optionsModal.showModal();
+            if (data.customWallpaper) {
+                customWallpaperInput.value = data.customWallpaper;
+            } else {
+                customWallpaperInput.value = "";
             }
-        );
+
+            if (data.backgroundBrightness !== undefined) {
+                brightnessSlider.value = data.backgroundBrightness;
+            } else {
+                brightnessSlider.value = 0.4;
+            }
+
+            optionsModal.showModal();
+        });
     };
 
     if (optionsLink) {
         optionsLink.addEventListener("click", showOptionsModal);
     }
-
     if (themeToggle) {
         themeToggle.addEventListener("click", function () {
             document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
@@ -208,6 +204,70 @@ function setupEventListeners() {
                 storage.set({ theme: document.documentElement.dataset.theme });
             }
         });
+    }
+    if (musicBtn) {
+        const musicModal = document.getElementById("music-modal");
+        const youtubeForm = document.getElementById("youtube-form");
+        const youtubeUrlInput = document.getElementById("youtube-url");
+        const youtubeEmbed = document.getElementById("youtube-embed");
+
+        const defaultYoutubeUrl = "https://www.youtube.com/watch?v=jfKfPfyJRdk";
+        musicBtn.addEventListener("click", function () {
+            musicModal.showModal();
+
+            if (storage) {
+                storage.get(["youtubeUrl"]).then((data) => {
+                    if (data.youtubeUrl) {
+                        youtubeUrlInput.value = data.youtubeUrl;
+                        if (youtubeEmbed.innerHTML === "") {
+                            loadMusicEmbed(data.youtubeUrl);
+                        }
+                    } else {
+                        youtubeUrlInput.value = defaultYoutubeUrl;
+                        if (youtubeEmbed.innerHTML === "") {
+                            loadMusicEmbed(defaultYoutubeUrl);
+                        }
+                    }
+                });
+            } else {
+                youtubeUrlInput.value = defaultYoutubeUrl;
+                if (youtubeEmbed.innerHTML === "") {
+                    loadMusicEmbed(defaultYoutubeUrl);
+                }
+            }
+        });
+        if (youtubeForm) {
+            youtubeForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const musicUrl = youtubeUrlInput.value.trim();
+                if (musicUrl) {
+                    if (storage) {
+                        storage.set({ youtubeUrl: musicUrl });
+                    }
+                    loadMusicEmbed(musicUrl);
+                }
+            });
+        }
+
+        function loadMusicEmbed(url) {
+            const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const youtubeMatch = url.match(youtubeRegex);
+
+            const spotifyRegex = /(?:open\.spotify\.com\/)(?:track|album|playlist|episode)(?:\/)([\w\d]+)/i;
+            const spotifyMatch = url.match(spotifyRegex);
+
+            if (youtubeMatch && youtubeMatch[1]) {
+                const videoId = youtubeMatch[1];
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?si=Y_vXpY6wIItrmI9x`;
+                youtubeEmbed.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+            } else if (spotifyMatch && spotifyMatch[0]) {
+                const spotifyUrl = spotifyMatch[0];
+                const embedUrl = `https://open.spotify.com/embed/${spotifyUrl.split("open.spotify.com/")[1]}`;
+                youtubeEmbed.innerHTML = `<iframe style="border-radius: 0px;" width="100%" height="352" src="${embedUrl}?utm_srouce=generator&theme=0" frameBorder="2" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+            } else {
+                youtubeEmbed.innerHTML = "<p class='text-center py-4'>Invalid YouTube or Spotify URL</p>";
+            }
+        }
     }
     if (preferencesForm) {
         preferencesForm.addEventListener("submit", function (event) {
