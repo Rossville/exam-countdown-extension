@@ -1,4 +1,4 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining } from "../common/countdown-data.js";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, initStorage, saveCustomExamData, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
 
 const currentDateElement = document.getElementById("current-date");
 const currentTimeElement = document.getElementById("current-time");
@@ -27,6 +27,9 @@ if (process.env.EXTENSION_PUBLIC_BROWSER == "firefox") {
 } else {
     storage = chrome.storage.sync;
 }
+
+// Initialize countdown-data with storage API
+initStorage(storage);
 
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
@@ -132,6 +135,16 @@ function updateCountdown() {
             timeRemaining = getTimeRemaining(jeeAdvExamDate);
             examName = "JEE Advanced";
             break;
+        case "custom":
+            if (hasValidCustomExam()) {
+                const customExam = getCustomExamData();
+                timeRemaining = getTimeRemaining(customExam.date);
+                examName = customExam.name;
+            } else {
+                timeRemaining = { total: 0, month: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+                examName = "Custom Exam";
+            }
+            break;
     }
 
     if (examBadgeElement) {
@@ -161,13 +174,16 @@ function setupEventListeners() {
     const optionsModal = document.getElementById("options-modal");
     const examSelector = document.getElementById("exam-selector");
     const saveMessage = document.getElementById("save-message");
+    const customExamSection = document.getElementById("custom-exam-section");
+    const customExamNameInput = document.getElementById("custom-exam-name");
+    const customExamDateInput = document.getElementById("custom-exam-date");
 
     const jeeDate = document.getElementById("jee-date");
     const neetDate = document.getElementById("neet-date");
     const jeeAdvDate = document.getElementById("jeeadv-date");
 
+    // Update exam dates in the modal
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
-
     if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
@@ -187,11 +203,59 @@ function setupEventListeners() {
                 brightnessSlider.value = data.backgroundBrightness;
             } else {
                 brightnessSlider.value = 0.4;
+            } // Set custom exam data if available
+            const customExam = getCustomExamData();
+
+            if (customExam.name) {
+                customExamNameInput.value = customExam.name;
+            } else {
+                customExamNameInput.value = "";
+            }
+
+            if (hasValidCustomExam()) {
+                customExamDateInput.value = customExam.date.toISOString().split("T")[0];
+
+                // Update custom exam stat
+                const customExamStat = document.getElementById("custom-exam-stat");
+                const customExamStatTitle = document.getElementById("custom-exam-stat-title");
+                const customExamStatDate = document.getElementById("custom-exam-stat-date");
+
+                if (customExamStat && customExamStatTitle && customExamStatDate) {
+                    customExamStat.classList.remove("hidden");
+                    customExamStatTitle.textContent = customExam.name;
+                    customExamStatDate.textContent = customExam.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+                }
+            } else {
+                customExamDateInput.value = "";
+
+                // Hide custom exam stat if no custom exam
+                const customExamStat = document.getElementById("custom-exam-stat");
+                if (customExamStat) {
+                    customExamStat.classList.add("hidden");
+                }
+            }
+
+            // Show/hide custom exam section based on selection
+            if (activeExam === "custom") {
+                customExamSection.classList.remove("hidden");
+            } else {
+                customExamSection.classList.add("hidden");
             }
 
             optionsModal.showModal();
         });
     };
+
+    // Handle showing/hiding custom exam section when exam selector changes
+    if (examSelector) {
+        examSelector.addEventListener("change", function () {
+            if (this.value === "custom") {
+                customExamSection.classList.remove("hidden");
+            } else {
+                customExamSection.classList.add("hidden");
+            }
+        });
+    }
 
     if (optionsLink) {
         optionsLink.addEventListener("click", showOptionsModal);
@@ -316,27 +380,57 @@ function setupEventListeners() {
             let wallpaperUrl = customWallpaperInput.value.trim();
             let brightness = parseFloat(brightnessSlider.value);
 
-            storage.set(
-                {
-                    activeExam: activeExam,
-                    customWallpaper: wallpaperUrl,
-                    backgroundBrightness: brightness,
-                },
-                function () {
-                    saveMessage.textContent = "Preferences Saved!";
+            // Get custom exam data
+            let customName = "";
+            let customDate = null;
 
-                    setActiveExam(activeExam);
+            if (activeExam === "custom") {
+                customName = customExamNameInput.value.trim();
+                if (!customName) {
+                    customName = "Custom Exam";
+                }
 
-                    customWallpaper = wallpaperUrl;
-                    backgroundBrightness = brightness;
-                    setBackground();
+                if (customExamDateInput.value) {
+                    customDate = new Date(customExamDateInput.value);
+                }
 
+                // Validate date
+                if (!customDate || isNaN(customDate.getTime())) {
+                    saveMessage.textContent = "Please enter a valid date for your custom exam";
+                    saveMessage.style.color = "red";
                     setTimeout(function () {
                         saveMessage.textContent = "";
+                        saveMessage.style.color = "";
                     }, 3000);
-                    optionsModal.close();
+                    return;
                 }
-            );
+            } // Save the custom exam data using countdown-data.js if it's custom exam
+            if (activeExam === "custom" && customDate) {
+                saveCustomExamData(customName, customDate);
+            }
+
+            // Save other preferences
+            const dataToSave = {
+                activeExam: activeExam,
+                customWallpaper: wallpaperUrl,
+                backgroundBrightness: brightness,
+            };
+
+            storage.set(dataToSave, function () {
+                saveMessage.textContent = "Preferences Saved!";
+                saveMessage.style.color = "";
+
+                setActiveExam(activeExam);
+
+                customWallpaper = wallpaperUrl;
+                backgroundBrightness = brightness;
+                setBackground();
+
+                setTimeout(function () {
+                    saveMessage.textContent = "";
+                }, 3000);
+                optionsModal.close();
+            });
         });
     }
 
@@ -345,6 +439,24 @@ function setupEventListeners() {
         brightnessSlider.addEventListener("input", function () {
             document.documentElement.style.setProperty("--bg-brightness", this.value);
         });
+    }
+
+    // Show or hide custom exam section based on exam selection
+    if (examSelector) {
+        examSelector.addEventListener("change", function () {
+            const selectedExam = this.value;
+
+            if (selectedExam === "custom") {
+                customExamSection.classList.remove("hidden");
+            } else {
+                customExamSection.classList.add("hidden");
+            }
+        });
+    }
+
+    // Initialize custom exam section visibility
+    if (customExamSection) {
+        customExamSection.classList.add("hidden");
     }
 }
 
@@ -361,6 +473,9 @@ function updateNovatraLink(exam) {
             break;
         case "neet":
             novatraLink.href = "https://novatra.in/exams/neet/";
+            break;
+        case "custom":
+            novatraLink.href = "https://novatra.in/";
             break;
         default:
             novatraLink.href = "https://novatra.in/";
