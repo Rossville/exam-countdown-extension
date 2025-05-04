@@ -248,6 +248,11 @@ function setupEventListeners() {
                 }
             });
         }
+        let spotifyEmbedController = null;
+
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            console.log("Spotify iFrame API is ready");
+        };
 
         function loadMusicEmbed(url) {
             const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
@@ -256,15 +261,49 @@ function setupEventListeners() {
             const spotifyRegex = /(?:open\.spotify\.com\/)(?:track|album|playlist|episode)(?:\/)([\w\d]+)/i;
             const spotifyMatch = url.match(spotifyRegex);
 
+            const spotifyEmbedContainer = document.getElementById("spotify-embed-container");
+
             if (youtubeMatch && youtubeMatch[1]) {
+                youtubeEmbed.classList.remove("hidden");
+                spotifyEmbedContainer.classList.add("hidden");
+
                 const videoId = youtubeMatch[1];
                 const embedUrl = `https://www.youtube.com/embed/${videoId}?si=Y_vXpY6wIItrmI9x`;
                 youtubeEmbed.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
             } else if (spotifyMatch && spotifyMatch[0]) {
+                youtubeEmbed.classList.add("hidden");
+                spotifyEmbedContainer.classList.remove("hidden");
+
                 const spotifyUrl = spotifyMatch[0];
-                const embedUrl = `https://open.spotify.com/embed/${spotifyUrl.split("open.spotify.com/")[1]}`;
-                youtubeEmbed.innerHTML = `<iframe style="border-radius: 0px;" width="100%" height="352" src="${embedUrl}?utm_srouce=generator&theme=0" frameBorder="2" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+                const spotifyPath = spotifyUrl.split("open.spotify.com/")[1];
+                const parts = spotifyPath.split("/");
+                const type = parts[0];
+                const id = parts[1];
+
+                const uri = `spotify:${type}:${id}`;
+
+                if (window.IFrameAPI) {
+                    spotifyEmbedContainer.innerHTML = "";
+
+                    window.IFrameAPI.createController(
+                        spotifyEmbedContainer,
+                        {
+                            width: "100%",
+                            height: "352",
+                            uri: uri,
+                            theme: "0",
+                        },
+                        (controller) => {
+                            spotifyEmbedController = controller;
+                        }
+                    );
+                } else {
+                    const embedUrl = `https://open.spotify.com/embed/${spotifyPath}?theme=0`;
+                    spotifyEmbedContainer.innerHTML = `<iframe style="border-radius: 12px;" width="100%" height="352" src="${embedUrl}" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+                }
             } else {
+                youtubeEmbed.classList.remove("hidden");
+                spotifyEmbedContainer.classList.add("hidden");
                 youtubeEmbed.innerHTML = "<p class='text-center py-4'>Invalid YouTube or Spotify URL</p>";
             }
         }
@@ -386,5 +425,11 @@ function initializePage() {
         }
     }, 1800000);
 }
+
+// Store the Spotify IFrame API when it loads
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+    window.IFrameAPI = IFrameAPI;
+    console.log("Spotify iFrame API ready");
+};
 
 document.addEventListener("DOMContentLoaded", initializePage);
