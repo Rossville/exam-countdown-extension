@@ -1,4 +1,16 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining } from "../common/countdown-data.js";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, initStorage, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
+
+let storage;
+
+if (typeof browser !== "undefined") {
+    storage = browser.storage.sync;
+} else if (typeof chrome !== "undefined") {
+    storage = chrome.storage.sync;
+}
+
+if (storage) {
+    initStorage(storage);
+}
 
 function updateCountdown() {
     // JEE Main countdown
@@ -23,9 +35,7 @@ function updateCountdown() {
         document.getElementById("jee-adv-hours").style = `--value:${jeeAdvTime.hours}`;
         document.getElementById("jee-adv-minutes").style = `--value:${jeeAdvTime.minutes}`;
         document.getElementById("jee-adv-seconds").style = `--value:${jeeAdvTime.seconds}`;
-    }
-
-    // NEET countdown
+    } // NEET countdown
     const neetTime = getTimeRemaining(neetExamDate);
     if (neetTime.total <= 0) {
         document.getElementById("neet-timer").innerHTML = "<p class='font-medium text-success'>Exam day has arrived!</p>";
@@ -36,15 +46,53 @@ function updateCountdown() {
         document.getElementById("neet-minutes").style = `--value:${neetTime.minutes}`;
         document.getElementById("neet-seconds").style = `--value:${neetTime.seconds}`;
     }
+
+    // Custom exam countdown (only if valid)
+    if (hasValidCustomExam()) {
+        const customExamSection = document.getElementById("custom-exam-section");
+        if (customExamSection) {
+            customExamSection.classList.remove("hidden");
+        }
+
+        const customExam = getCustomExamData();
+
+        // Update custom exam badge with the name
+        const customExamBadge = document.getElementById("custom-exam-badge");
+        if (customExamBadge) {
+            customExamBadge.textContent = customExam.name;
+        }
+
+        const customExamTime = getTimeRemaining(customExam.date);
+        if (customExamTime.total <= 0) {
+            document.getElementById("custom-exam-timer").innerHTML = "<p class='font-medium text-success'>Exam day has arrived!</p>";
+        } else {
+            document.getElementById("custom-exam-months").style = `--value:${customExamTime.month}`;
+            document.getElementById("custom-exam-days").style = `--value:${customExamTime.days}`;
+            document.getElementById("custom-exam-hours").style = `--value:${customExamTime.hours}`;
+            document.getElementById("custom-exam-minutes").style = `--value:${customExamTime.minutes}`;
+            document.getElementById("custom-exam-seconds").style = `--value:${customExamTime.seconds}`;
+        }
+    } else {
+        // Hide custom exam section if no valid custom exam exists
+        const customExamSection = document.getElementById("custom-exam-section");
+        if (customExamSection) {
+            customExamSection.classList.add("hidden");
+        }
+    }
 }
 
 function loadThemePreference() {
-    if (chrome.storage) {
-        chrome.storage.sync.get(["theme"], function (data) {
-            if (data.theme) {
-                document.documentElement.dataset.theme = data.theme;
-            }
-        });
+    if (storage) {
+        storage
+            .get(["theme"])
+            .then(function (data) {
+                if (data.theme) {
+                    document.documentElement.dataset.theme = data.theme;
+                }
+            })
+            .catch(function (error) {
+                console.error("Error loading theme preference:", error);
+            });
     }
 }
 
@@ -54,14 +102,10 @@ function toggleTheme() {
 
     document.documentElement.dataset.theme = newTheme;
 
-    if (chrome.storage) {
-        chrome.storage.sync.set({ theme: newTheme });
-    }
-}
-
-function openFullCountdown() {
-    if (chrome.tabs) {
-        chrome.tabs.create({ url: "../newtab/newtab.html" });
+    if (storage) {
+        storage.set({ theme: newTheme }).catch(function (error) {
+            console.error("Error saving theme preference:", error);
+        });
     }
 }
 
