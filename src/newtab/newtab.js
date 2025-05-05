@@ -177,6 +177,11 @@ function setupEventListeners() {
     const customExamNameInput = document.getElementById("custom-exam-name");
     const customExamDateInput = document.getElementById("custom-exam-date");
 
+    const toggleDateTime = document.getElementById("toggle-datetime");
+    const toggleCountdown = document.getElementById("toggle-countdown");
+    const toggleQuote = document.getElementById("toggle-quote");
+    const toggleBrand = document.getElementById("toggle-brand");
+
     const themeToggle = document.getElementById("theme-toggle");
     const jeeDate = document.getElementById("jee-date");
     const neetDate = document.getElementById("neet-date");
@@ -184,7 +189,6 @@ function setupEventListeners() {
     const musicBtn = document.getElementById("music-btn");
     const optionsLink = document.getElementById("options-link");
 
-    // Update exam dates in the modal
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
     if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
@@ -356,7 +360,11 @@ function setupEventListeners() {
             let wallpaperUrl = customWallpaperInput.value.trim();
             let brightness = parseFloat(brightnessSlider.value);
 
-            // Get custom exam data
+            let showDateTime = toggleDateTime ? toggleDateTime.checked : true;
+            let showCountdown = toggleCountdown ? toggleCountdown.checked : true;
+            let showQuote = toggleQuote ? toggleQuote.checked : true;
+            let showBrand = toggleBrand ? toggleBrand.checked : true;
+
             let customName = "";
             let customDate = null;
 
@@ -370,7 +378,6 @@ function setupEventListeners() {
                     customDate = new Date(customExamDateInput.value);
                 }
 
-                // Validate date
                 if (!customDate || isNaN(customDate.getTime())) {
                     saveMessage.textContent = "Please enter a valid date for your custom exam";
                     saveMessage.style.color = "red";
@@ -380,44 +387,59 @@ function setupEventListeners() {
                     }, 3000);
                     return;
                 }
-            } // Save the custom exam data using countdown-data.js if it's custom exam
+            }
             if (activeExam === "custom" && customDate) {
                 saveCustomExamData(customName, customDate);
             }
-
-            // Save other preferences
             const dataToSave = {
                 activeExam: activeExam,
                 customWallpaper: wallpaperUrl,
                 backgroundBrightness: brightness,
+                widgetVisibility: {
+                    dateTime: showDateTime,
+                    countdown: showCountdown,
+                    quote: showQuote,
+                    brand: showBrand,
+                },
             };
 
-            browser.storage.sync.set(dataToSave, function () {
-                saveMessage.textContent = "Preferences Saved!";
-                saveMessage.style.color = "";
+            browser.storage.sync
+                .set(dataToSave)
+                .then(() => {
+                    saveMessage.textContent = "Preferences Saved!";
+                    saveMessage.style.color = "";
 
-                setActiveExam(activeExam);
+                    setActiveExam(activeExam);
 
-                customWallpaper = wallpaperUrl;
-                backgroundBrightness = brightness;
-                setBackground();
+                    customWallpaper = wallpaperUrl;
+                    backgroundBrightness = brightness;
+                    setBackground();
 
-                setTimeout(function () {
-                    saveMessage.textContent = "";
-                }, 3000);
-                optionsModal.close();
-            });
+                    updateWidgetVisibility(showDateTime, showCountdown, showQuote, showBrand);
+
+                    setTimeout(function () {
+                        saveMessage.textContent = "";
+                    }, 3000);
+                    optionsModal.close();
+                })
+                .catch((error) => {
+                    console.error("Failed to save preferences:", error);
+                    saveMessage.textContent = "Failed to save preferences";
+                    saveMessage.style.color = "red";
+
+                    setTimeout(function () {
+                        saveMessage.textContent = "";
+                    }, 3000);
+                });
         });
     }
 
-    // Live preview of brightness changes
     if (brightnessSlider) {
         brightnessSlider.addEventListener("input", function () {
             document.documentElement.style.setProperty("--bg-brightness", this.value);
         });
     }
 
-    // Show or hide custom exam section based on exam selection
     if (examSelector) {
         examSelector.addEventListener("change", function () {
             const selectedExam = this.value;
@@ -430,7 +452,6 @@ function setupEventListeners() {
         });
     }
 
-    // Initialize custom exam section visibility
     if (customExamSection) {
         customExamSection.classList.add("hidden");
     }
@@ -469,6 +490,29 @@ function setActiveExam(exam) {
     }
 }
 
+function updateWidgetVisibility(showDateTime, showCountdown, showQuote, showBrand) {
+    const dateTimeElement = document.querySelector("header .px-4.py-2");
+    const countdownElement = document.querySelector("main .text-center");
+    const quoteElement = document.querySelector(".quote-container");
+    const brandElement = document.querySelector("#novatra-link").parentElement;
+
+    if (dateTimeElement) {
+        dateTimeElement.style.display = showDateTime ? "" : "none";
+    }
+
+    if (countdownElement) {
+        countdownElement.style.display = showCountdown ? "" : "none";
+    }
+
+    if (quoteElement) {
+        quoteElement.style.display = showQuote ? "" : "none";
+    }
+
+    if (brandElement) {
+        brandElement.style.display = showBrand ? "" : "none";
+    }
+}
+
 function loadUserPreferences() {
     browser.storage.sync.get().then((data) => {
         if (data.theme) {
@@ -488,6 +532,23 @@ function loadUserPreferences() {
 
         if (data.backgroundBrightness !== undefined) {
             backgroundBrightness = data.backgroundBrightness;
+        }
+
+        // Load widget visibility preferences
+        const toggleDateTime = document.getElementById("toggle-datetime");
+        const toggleCountdown = document.getElementById("toggle-countdown");
+        const toggleQuote = document.getElementById("toggle-quote");
+        const toggleBrand = document.getElementById("toggle-brand");
+
+        if (data.widgetVisibility) {
+            // Update toggle inputs
+            if (toggleDateTime) toggleDateTime.checked = data.widgetVisibility.dateTime;
+            if (toggleCountdown) toggleCountdown.checked = data.widgetVisibility.countdown;
+            if (toggleQuote) toggleQuote.checked = data.widgetVisibility.quote;
+            if (toggleBrand) toggleBrand.checked = data.widgetVisibility.brand;
+
+            // Apply visibility settings
+            updateWidgetVisibility(data.widgetVisibility.dateTime, data.widgetVisibility.countdown, data.widgetVisibility.quote, data.widgetVisibility.brand);
         }
 
         console.log(currentExam);
