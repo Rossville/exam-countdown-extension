@@ -1,61 +1,39 @@
 {
-  "firefox:applications": {
+  "{{firefox}}.browser_specific_settings": {
     "gecko": {
       "id": "support@novatra.in"
     }
   },
-  "chromium:manifest_version": 3,
-  "firefox:manifest_version": 2,
-  "version": "1.1",
   "name": "Exam Countdown",
   "description": "A New Tab Countdown Extension",
   "author": "SpreadSheets600",
-  "permissions": [
-    "storage"
-  ],
-  "firefox:content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "chromium:content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  },
-  "firefox:background": {
-    "scripts": [
-      "src/background.js"
-    ],
-    "persistent": false
-  },
-  "chromium:background": {
-    "service_worker": "src/background.js"
-  },
+  "{{chrome}}.manifest_version": 3,
+  "{{firefox}}.manifest_version": 2,
   "icons": {
-    "16": "src/icons/icon16.png",
-    "32": "src/icons/icon32.png",
-    "48": "src/icons/icon48.png",
-    "96": "src/icons/icon96.png",
-    "128": "src/icons/icon128.png"
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png"
   },
-  "chromium:action": {
-    "default_icon": {
-      "16": "src/icons/icon16.png",
-      "32": "src/icons/icon32.png",
-      "48": "src/icons/icon48.png",
-      "96": "src/icons/icon96.png",
-      "128": "src/icons/icon128.png"
-    },
-    "default_popup": "src/popup/popup.html",
+  "{{chrome}}.action": {
+    "default_popup": "popup/popup.html"
+  },
+  "{{firefox}}.browser_action": {
+    "default_popup": "popup/popup.html",
     "default_title": "Exam Countdown"
   },
-  "firefox:browser_action": {
-    "default_icon": {
-      "16": "src/icons/icon16.png",
-      "32": "src/icons/icon32.png",
-      "48": "src/icons/icon48.png",
-      "96": "src/icons/icon96.png",
-      "128": "src/icons/icon128.png"
-    },
-    "default_popup": "src/popup/popup.html",
-    "default_title": "Exam Countdown"
+  "background": {
+    "{{chrome}}.service_worker": "background/background.js",
+    "{{firefox}}.scripts": ["background/background.js"],
+    "{{firefox}}.persistent": false
   },
+  "permissions": ["storage"],
   "chrome_url_overrides": {
-    "newtab": "src/newtab/newtab.html"
-  }
+    "newtab": "newtab/newtab.html"
+  },
+  "{{firefox}}.content_security_policy": "script-src 'self'; object-src 'self'",
+  "{{chrome}}.content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'"
+    }
 }

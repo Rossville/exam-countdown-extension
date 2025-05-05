@@ -1,16 +1,5 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, initStorage, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
-
-let storage;
-
-if (typeof browser !== "undefined") {
-    storage = browser.storage.sync;
-} else if (typeof chrome !== "undefined") {
-    storage = chrome.storage.sync;
-}
-
-if (storage) {
-    initStorage(storage);
-}
+import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
+import browser from "webextension-polyfill";
 
 function updateCountdown() {
     // JEE Main countdown
@@ -82,18 +71,11 @@ function updateCountdown() {
 }
 
 function loadThemePreference() {
-    if (storage) {
-        storage
-            .get(["theme"])
-            .then(function (data) {
-                if (data.theme) {
-                    document.documentElement.dataset.theme = data.theme;
-                }
-            })
-            .catch(function (error) {
-                console.error("Error loading theme preference:", error);
-            });
-    }
+    browser.storage.sync.get(["theme"]).then((data) => {
+        if (data.theme) {
+            document.documentElement.dataset.theme = data.theme;
+        }
+    })
 }
 
 function toggleTheme() {
@@ -102,8 +84,8 @@ function toggleTheme() {
 
     document.documentElement.dataset.theme = newTheme;
 
-    if (storage) {
-        storage.set({ theme: newTheme }).catch(function (error) {
+    if (browser.storage) {
+        browser.storage.sync.set({ theme: newTheme }).catch(function (error) {
             console.error("Error saving theme preference:", error);
         });
     }

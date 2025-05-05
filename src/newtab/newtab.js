@@ -1,41 +1,11 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, initStorage, saveCustomExamData, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
-
-const currentDateElement = document.getElementById("current-date");
-const currentTimeElement = document.getElementById("current-time");
-
-const quoteTextElement = document.getElementById("quote-text");
-const quoteAuthorElement = document.getElementById("quote-author");
-
-const countdownDaysElement = document.getElementById("countdown-days");
-const countdownHoursElement = document.getElementById("countdown-hours");
-const countdownMonthsElement = document.getElementById("countdown-months");
-const countdownMinutesElement = document.getElementById("countdown-minutes");
-const countdownSecondsElement = document.getElementById("countdown-seconds");
-
-const countdownLabelElement = document.getElementById("countdown-label");
-
-const examBadgeElement = document.getElementById("exam-badge");
-
-const optionsLink = document.getElementById("options-link");
-const themeToggle = document.getElementById("theme-toggle");
-const musicBtn = document.getElementById("music-btn");
-
-var storage;
-
-if (process.env.EXTENSION_PUBLIC_BROWSER == "firefox") {
-    storage = browser.storage.sync;
-} else {
-    storage = chrome.storage.sync;
-}
-
-// Initialize countdown-data with storage API
-initStorage(storage);
+import browser from "webextension-polyfill";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, saveCustomExamData, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
 
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
 let currentExam = "jeeAdv";
 let customWallpaper = "";
-let backgroundBrightness = 0.4; // Default brightness value
+let backgroundBrightness = 0.4;
 
 const fallbackMotivationalQuotes = [
     { content: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
@@ -57,6 +27,9 @@ const fallbackMotivationalQuotes = [
 
 function updateDateTime() {
     const now = new Date();
+    const currentDateElement = document.getElementById("current-date");
+    const currentTimeElement = document.getElementById("current-time");
+
 
     const dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     const formattedDate = now.toLocaleDateString("en-US", dateOptions);
@@ -68,6 +41,9 @@ function updateDateTime() {
 }
 
 function displayRandomQuote() {
+    const quoteTextElement = document.getElementById("quote-text");
+    const quoteAuthorElement = document.getElementById("quote-author");
+
     quoteTextElement.style.opacity = 0;
     quoteAuthorElement.style.opacity = 0;
 
@@ -134,6 +110,13 @@ function setRandomBackground() {
 }
 
 function updateCountdown() {
+    const countdownDaysElement = document.getElementById("countdown-days");
+    const countdownHoursElement = document.getElementById("countdown-hours");
+    const countdownMonthsElement = document.getElementById("countdown-months");
+    const countdownMinutesElement = document.getElementById("countdown-minutes");
+    const countdownSecondsElement = document.getElementById("countdown-seconds");
+    const countdownLabelElement = document.getElementById("countdown-label");
+    const examBadgeElement = document.getElementById("exam-badge");
     let timeRemaining;
     let examName;
 
@@ -193,9 +176,12 @@ function setupEventListeners() {
     const customExamNameInput = document.getElementById("custom-exam-name");
     const customExamDateInput = document.getElementById("custom-exam-date");
 
+    const themeToggle = document.getElementById("theme-toggle");
     const jeeDate = document.getElementById("jee-date");
     const neetDate = document.getElementById("neet-date");
     const jeeAdvDate = document.getElementById("jeeadv-date");
+    const musicBtn = document.getElementById("music-btn");
+    const optionsLink = document.getElementById("options-link");
 
     // Update exam dates in the modal
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
@@ -203,7 +189,7 @@ function setupEventListeners() {
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
-        storage.get().then((data) => {
+        browser.storage.sync.get().then((data) => {
             const activeExam = data.activeExam || "jee";
 
             examSelector.value = activeExam;
@@ -279,9 +265,7 @@ function setupEventListeners() {
         themeToggle.addEventListener("click", function () {
             document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
 
-            if (storage) {
-                storage.set({ theme: document.documentElement.dataset.theme });
-            }
+            browser.storage.sync.set({ theme: document.documentElement.dataset.theme });
         });
     }
     if (musicBtn) {
@@ -294,8 +278,8 @@ function setupEventListeners() {
         musicBtn.addEventListener("click", function () {
             musicModal.showModal();
 
-            if (storage) {
-                storage.get(["youtubeUrl"]).then((data) => {
+            if (browser) {
+                browser.storage.sync.get(["youtubeUrl"]).then((data) => {
                     if (data.youtubeUrl) {
                         youtubeUrlInput.value = data.youtubeUrl;
                         if (youtubeEmbed.innerHTML === "") {
@@ -320,8 +304,8 @@ function setupEventListeners() {
                 event.preventDefault();
                 const musicUrl = youtubeUrlInput.value.trim();
                 if (musicUrl) {
-                    if (storage) {
-                        storage.set({ youtubeUrl: musicUrl });
+                    if (browser.storage) {
+                        browser.storage.sync.set({ youtubeUrl: musicUrl });
                     }
                     loadMusicEmbed(musicUrl);
                 }
@@ -337,10 +321,29 @@ function setupEventListeners() {
 
                 const videoId = youtubeMatch[1];
                 const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?si=Y_vXpY6wIItrmI9x`;
-                youtubeEmbed.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+
+                while (youtubeEmbed.firstChild) {
+                    youtubeEmbed.removeChild(youtubeEmbed.firstChild);
+                }
+                const iframe = document.createElement('iframe');
+                iframe.width = '100%';
+                iframe.height = '100%';
+                iframe.src = embedUrl;
+                iframe.title = 'YouTube video player';
+                iframe.frameBorder = '0';
+                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope');
+                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                youtubeEmbed.appendChild(iframe);
             } else {
                 youtubeEmbed.classList.remove("hidden");
-                youtubeEmbed.innerHTML = "<p class='text-center py-4'>Invalid YouTube URL</p>";
+
+                while (youtubeEmbed.firstChild) {
+                    youtubeEmbed.removeChild(youtubeEmbed.firstChild);
+                }
+                const errorParagraph = document.createElement('p');
+                errorParagraph.className = 'text-center py-4';
+                errorParagraph.textContent = 'Invalid YouTube URL';
+                youtubeEmbed.appendChild(errorParagraph);
             }
         }
     }
@@ -388,7 +391,7 @@ function setupEventListeners() {
                 backgroundBrightness: brightness,
             };
 
-            storage.set(dataToSave, function () {
+            browser.storage.sync.set(dataToSave, function () {
                 saveMessage.textContent = "Preferences Saved!";
                 saveMessage.style.color = "";
 
@@ -460,39 +463,37 @@ function setActiveExam(exam) {
     updateCountdown();
     updateNovatraLink(exam);
 
-    if (storage) {
-        storage.set({ activeExam: exam });
+    if (browser.storage) {
+        browser.storage.sync.set({ activeExam: exam });
     }
 }
 
 function loadUserPreferences() {
-    if (storage) {
-        storage.get().then((data) => {
-            if (data.theme) {
-                document.documentElement.dataset.theme = data.theme;
-            }
+    browser.storage.sync.get().then((data) => {
+        if (data.theme) {
+            document.documentElement.dataset.theme = data.theme;
+        }
 
-            if (data.activeExam) {
-                setActiveExam(data.activeExam);
-            } else {
-                // If no exam is selected, at least update the link
-                updateNovatraLink(currentExam);
-            }
+        if (data.activeExam) {
+            setActiveExam(data.activeExam);
+        } else {
+            // If no exam is selected, at least update the link
+            updateNovatraLink(currentExam);
+        }
 
-            if (data.customWallpaper) {
-                customWallpaper = data.customWallpaper;
-            }
+        if (data.customWallpaper) {
+            customWallpaper = data.customWallpaper;
+        }
 
-            if (data.backgroundBrightness !== undefined) {
-                backgroundBrightness = data.backgroundBrightness;
-            }
+        if (data.backgroundBrightness !== undefined) {
+            backgroundBrightness = data.backgroundBrightness;
+        }
 
-            setBackground();
-        });
-    } else {
+        console.log(currentExam);
+
         updateNovatraLink(currentExam);
         setBackground();
-    }
+    });
 }
 
 function initializePage() {

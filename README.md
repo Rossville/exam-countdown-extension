@@ -22,7 +22,6 @@ This extension provides countdown timers for the JEE and NEET exams, allowing us
 
 
 ## Usage
-
 - Click on the extension icon to open the popup and view the countdowns.
 - Access the options page to set your preferences for displaying countdowns.
 - Use the countdown page for a detailed view, which can be opened in a new tab.
@@ -31,32 +30,49 @@ This extension provides countdown timers for the JEE and NEET exams, allowing us
 
 Feel free to submit issues or pull requests for improvements or bug fixes.
 
-## Development
+## Local Development
 
-Before begining, install the required dependencies.
+### Prerequisites
+Before beginning, install `pnpm` globally (if not already installed):
 
 ```bash
-npm i
+npm install -g pnpm
 ```
 
-**Development Mode**: This command runs your extension in development mode. It will launch a new browser instance with your extension loaded. The page will automatically reload whenever you make changes to your code, allowing for a smooth development experience.
+### Install Dependencies
+Install the required dependencies for the project:
 
 ```bash
-npm run dev
+pnpm install
 ```
 
-### npm start
-
-**Production Preview**: This command runs your extension in production mode. It will launch a new browser instance with your extension loaded, simulating the environment and behavior of your extension as it will appear once published.
+### Development 
+To develop for **Firefox**, set the `TARGET_BROWSER` environment variable before running the dev server:
 
 ```bash
-npm run start
+export TARGET_BROWSER=firefox  # Linux/macOS
+set TARGET_BROWSER=firefox     # Windows (Command Prompt)
+$env:TARGET_BROWSER="firefox"  # Windows (PowerShell)
 ```
 
-### npm build
-
-**Build for Production**: This command builds your extension for production. It optimizes and bundles your extension, preparing it for deployment to the target browser's store.
+Then start the development server:
 
 ```bash
-npm run build
+pnpm dev
+```
+
+This will launch Firefox with your extension loaded. The page will automatically reload whenever you make changes to your code.
+
+### Build for Production
+This command builds your extension for production. It optimizes and bundles your extension, preparing it for deployment to the target browser's store.
+
+```bash
+pnpm build
+```
+
+### Linting
+After building, you can run the linter on the production files in the `dist/` directory to check for issues:
+
+```bash
+pnpm lint dist/
 ```

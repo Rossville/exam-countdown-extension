@@ -1,4 +1,5 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate } from "./common/countdown-data.js";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate } from "../common/countdown-data"
+import browser from "webextension-polyfill";
 
 const countdowns = {
     jee: {
@@ -15,20 +16,20 @@ const countdowns = {
     },
 };
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.sync.set({ countdowns });
+browser.runtime.onInstalled.addListener(() => {
+    browser.storage.sync.set({ countdowns });
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "getCountdowns") {
-        chrome.storage.sync.get("countdowns", (data) => {
+        browser.storage.sync.get("countdowns").then((data) => {
             sendResponse(data.countdowns);
         });
         return true;
     }
 });
 
-chrome.storage.onChanged.addListener((changes, area) => {
+browser.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.countdowns) {
         countdowns.jee.isActive = changes.countdowns.newValue.jee.isActive;
         countdowns.neet.isActive = changes.countdowns.newValue.neet.isActive;
@@ -36,8 +37,8 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.storage.sync.set({
+browser.runtime.onInstalled.addListener(function () {
+    browser.storage.sync.set({
         showJEE: true,
         showNEET: true,
         showJEEADV: true,
