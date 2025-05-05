@@ -30,7 +30,6 @@ function updateDateTime() {
     const currentDateElement = document.getElementById("current-date");
     const currentTimeElement = document.getElementById("current-time");
 
-
     const dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     const formattedDate = now.toLocaleDateString("en-US", dateOptions);
     currentDateElement.textContent = formattedDate;
@@ -76,36 +75,38 @@ function displayRandomQuote() {
 
 function setBackground() {
     const backgroundElement = document.querySelector(".background");
-
     if (!backgroundElement) return;
 
     backgroundElement.style.opacity = 0;
     document.documentElement.style.setProperty("--bg-brightness", backgroundBrightness);
 
-    setTimeout(() => {
-        if (customWallpaper) {
-            backgroundElement.style.backgroundImage = `url(${customWallpaper})`;
-        } else {
-            const randomIndex = Math.floor(Math.random() * backgrounds.length);
-            backgroundElement.style.backgroundImage = `url(${backgrounds[randomIndex]})`;
-        }
-        backgroundElement.style.opacity = 1;
-    }, 500);
-}
+    fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/wallpapers.json")
+        .then((response) => response.json())
+        .then((data) => {
+            const images = data.images;
+            const imageList = Array.isArray(images) && images.length ? images : fallbackBackgrounds;
+            const randomIndex = Math.floor(Math.random() * imageList.length);
+            const selectedImage = imageList[randomIndex];
+            preloadAndSetBackground(selectedImage);
+        })
+        .catch((err) => {
+            console.warn("Failed To Load Backgrounds, Using Fallback.", err);
+            const randomIndex = Math.floor(Math.random() * fallbackBackgrounds.length);
+            preloadAndSetBackground(fallbackBackgrounds[randomIndex]);
+        });
 
-function setRandomBackground() {
-    if (!customWallpaper) {
-        const backgroundElement = document.querySelector(".background");
-
-        if (backgroundElement) {
-            backgroundElement.style.opacity = 0;
-
+    function preloadAndSetBackground(url) {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
             setTimeout(() => {
-                const randomIndex = Math.floor(Math.random() * backgrounds.length);
-                backgroundElement.style.backgroundImage = `url(${backgrounds[randomIndex]})`;
+                backgroundElement.style.backgroundImage = `url(${url})`;
                 backgroundElement.style.opacity = 1;
             }, 500);
-        }
+        };
+        img.onerror = () => {
+            console.error("Failed To Preload Image:", url);
+        };
     }
 }
 
@@ -325,14 +326,14 @@ function setupEventListeners() {
                 while (youtubeEmbed.firstChild) {
                     youtubeEmbed.removeChild(youtubeEmbed.firstChild);
                 }
-                const iframe = document.createElement('iframe');
-                iframe.width = '100%';
-                iframe.height = '100%';
+                const iframe = document.createElement("iframe");
+                iframe.width = "100%";
+                iframe.height = "100%";
                 iframe.src = embedUrl;
-                iframe.title = 'YouTube video player';
-                iframe.frameBorder = '0';
-                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope');
-                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                iframe.title = "YouTube video player";
+                iframe.frameBorder = "0";
+                iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope");
+                iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
                 youtubeEmbed.appendChild(iframe);
             } else {
                 youtubeEmbed.classList.remove("hidden");
@@ -340,9 +341,9 @@ function setupEventListeners() {
                 while (youtubeEmbed.firstChild) {
                     youtubeEmbed.removeChild(youtubeEmbed.firstChild);
                 }
-                const errorParagraph = document.createElement('p');
-                errorParagraph.className = 'text-center py-4';
-                errorParagraph.textContent = 'Invalid YouTube URL';
+                const errorParagraph = document.createElement("p");
+                errorParagraph.className = "text-center py-4";
+                errorParagraph.textContent = "Invalid YouTube URL";
                 youtubeEmbed.appendChild(errorParagraph);
             }
         }
@@ -506,12 +507,6 @@ function initializePage() {
     setInterval(updateDateTime, 1000);
     setInterval(updateCountdown, 1000);
     setInterval(displayRandomQuote, 3600000);
-
-    setInterval(() => {
-        if (!customWallpaper) {
-            setRandomBackground();
-        }
-    }, 1800000);
 }
 
 document.addEventListener("DOMContentLoaded", initializePage);
