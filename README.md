@@ -69,3 +69,10 @@ This command builds your extension for production. It optimizes and bundles your
 ```bash
 pnpm build
 ```
+
+### Linting
+After building, you can run the linter on the production files in the `dist/` directory to check for issues:
+
+```bash
+pnpm lint dist/
+```
