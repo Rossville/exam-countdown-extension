@@ -1,5 +1,5 @@
 import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
-import { chrome } from "webextension-polyfill";
+import browser from "webextension-polyfill";
 
 function updateCountdown() {
     // JEE Main countdown
@@ -71,7 +71,7 @@ function updateCountdown() {
 }
 
 function loadThemePreference() {
-    chrome.storage.sync.get(["theme"], function (data) {
+    browser.storage.sync.get(["theme"]).then((data) => {
         if (data.theme) {
             document.documentElement.dataset.theme = data.theme;
         }
@@ -84,8 +84,8 @@ function toggleTheme() {
 
     document.documentElement.dataset.theme = newTheme;
 
-    if (chrome.storage) {
-        chrome.storage.sync.storage.set({ theme: newTheme }).catch(function (error) {
+    if (browser.storage) {
+        browser.storage.sync.set({ theme: newTheme }).catch(function (error) {
             console.error("Error saving theme preference:", error);
         });
     }

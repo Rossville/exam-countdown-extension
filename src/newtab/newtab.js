@@ -1,6 +1,5 @@
+import browser from "webextension-polyfill";
 import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, saveCustomExamData, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
-
-import { chrome } from "webextension-polyfill";
 
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
@@ -190,7 +189,7 @@ function setupEventListeners() {
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
-        chrome.storage.sync.get(null, (data) => {
+        browser.storage.sync.get().then((data) => {
             const activeExam = data.activeExam || "jee";
 
             examSelector.value = activeExam;
@@ -266,7 +265,7 @@ function setupEventListeners() {
         themeToggle.addEventListener("click", function () {
             document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
 
-            chrome.storage.sync.set({ theme: document.documentElement.dataset.theme });
+            browser.storage.sync.set({ theme: document.documentElement.dataset.theme });
         });
     }
     if (musicBtn) {
@@ -279,8 +278,8 @@ function setupEventListeners() {
         musicBtn.addEventListener("click", function () {
             musicModal.showModal();
 
-            if (chrome) {
-                chrome.storage.sync.get(["youtubeUrl"], (data) => {
+            if (browser) {
+                browser.storage.sync.get(["youtubeUrl"]).then((data) => {
                     if (data.youtubeUrl) {
                         youtubeUrlInput.value = data.youtubeUrl;
                         if (youtubeEmbed.innerHTML === "") {
@@ -305,8 +304,8 @@ function setupEventListeners() {
                 event.preventDefault();
                 const musicUrl = youtubeUrlInput.value.trim();
                 if (musicUrl) {
-                    if (chrome.storage) {
-                        chrome.storage.sync.set({ youtubeUrl: musicUrl });
+                    if (browser.storage) {
+                        browser.storage.sync.set({ youtubeUrl: musicUrl });
                     }
                     loadMusicEmbed(musicUrl);
                 }
@@ -373,7 +372,7 @@ function setupEventListeners() {
                 backgroundBrightness: brightness,
             };
 
-            chrome.storage.sync.set(dataToSave, function () {
+            browser.storage.sync.set(dataToSave, function () {
                 saveMessage.textContent = "Preferences Saved!";
                 saveMessage.style.color = "";
 
@@ -445,13 +444,13 @@ function setActiveExam(exam) {
     updateCountdown();
     updateNovatraLink(exam);
 
-    if (chrome.storage) {
-        chrome.storage.sync.set({ activeExam: exam });
+    if (browser.storage) {
+        browser.storage.sync.set({ activeExam: exam });
     }
 }
 
 function loadUserPreferences() {
-    chrome.storage.sync.get(null, (data) => {
+    browser.storage.sync.get().then((data) => {
         if (data.theme) {
             document.documentElement.dataset.theme = data.theme;
         }
@@ -470,6 +469,8 @@ function loadUserPreferences() {
         if (data.backgroundBrightness !== undefined) {
             backgroundBrightness = data.backgroundBrightness;
         }
+
+        console.log(currentExam);
 
         updateNovatraLink(currentExam);
         setBackground();

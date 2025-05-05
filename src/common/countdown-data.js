@@ -5,13 +5,13 @@ const jeeAdvExamDate = new Date(2025, 4, 18); // 18 - 05 - 2025
 let customExamName = "Custom Exam";
 let customExamDate = null;
 
-import { chrome } from "webextension-polyfill";
+import browser from "webextension-polyfill";
 
 async function loadCustomExamData() {
-    if (chrome.storage) return;
+    if (browser.storage) return;
 
     try {
-        const data = await chrome.storage.sync.get(["customExamName", "customExamDate"]);
+        const data = await browser.storage.sync.get(["customExamName", "customExamDate"]);
         if (data.customExamName) {
             customExamName = data.customExamName;
         }
@@ -25,13 +25,13 @@ async function loadCustomExamData() {
 }
 
 function saveCustomExamData(name, date) {
-    if (chrome.storage) return;
+    if (browser.storage) return;
 
     customExamName = name || "Custom Exam";
     customExamDate = date;
 
     try {
-        chrome.storage.sync.set({
+        browser.storage.sync.set({
             customExamName: customExamName,
             customExamDate: customExamDate ? customExamDate.getTime() : null,
         });
@@ -69,4 +69,4 @@ function formatTime(time) {
     return time < 10 ? `0${time}` : time;
 }
 
-export { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, formatTime, initStorage, saveCustomExamData, getCustomExamData, hasValidCustomExam };
+export { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, formatTime, saveCustomExamData, getCustomExamData, hasValidCustomExam };
