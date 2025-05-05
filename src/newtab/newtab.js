@@ -74,7 +74,7 @@ function displayRandomQuote() {
     let fallbackIndex = Math.floor(Math.random() * fallbackMotivationalQuotes.length);
     let fallbackQuote = fallbackMotivationalQuotes[fallbackIndex];
 
-    fetch("http://api.quotable.io/quotes/random?tags=inspirational|motivational|productivity|education")
+    fetch("http://api.quotable.io/quotes/random?tags=inspirational|motivational|productivity|education|wisdom|success|work")
         .then((res) => res.json())
         .then((data) => {
             const quote = {
