@@ -10,7 +10,7 @@
         <div class="background"></div>
 
         <!-- Main Container -->
-        <div class="h-screen flex flex-col p-6 z-10">
+        <div class="h-screen flex flex-col py-2 px-4 z-10">
             <header class="flex justify-between items-start">
                 <!-- Icons -->
                 <div class="flex space-x-4">
@@ -29,10 +29,15 @@
                             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
                         </svg>
                     </button>
+                    <button id="wallpaper-info-btn" class="btn btn-ghost btn-circle btn-glow backdrop-blur-sm bg-opacity-20 bg-base-100" title="Wallpaper Source">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Date And Time -->
-                <div class="px-4 py-2 rounded-full text-right">
+                <div id="clock-class" class="rounded-full text-right">
                     <div id="current-time" class="text-2xl font-bold tracking-wide"></div>
                     <div id="current-date" class="text-sm opacity-80"></div>
                 </div>
@@ -40,7 +45,7 @@
 
             <!-- Countdown -->
             <main class="flex-1 flex flex-col justify-center items-center">
-                <div class="text-center">
+                <div id="countdown-class" class="text-center">
                     <div id="exam-badge" class="text-2xl font-semibold mb-4">JEE Main</div>
                     <div class="relative mb-10">
                         <div id="countdown-label" class="exam-label text-white"></div>
@@ -81,12 +86,39 @@
             </main>
 
             <!-- Footer -->
-            <footer class="flex justify-between items-end w-full mt-auto pb-4">
-                <div class="quote-container max-w-md p-4 rounded-lg">
-                    <p id="quote-text" class="text-lg italic"></p>
-                    <p id="quote-author" class="opacity-70 mt-2 text-right font-medium"></p>
+            <footer class="w-full mt-auto relative">
+                <!-- Quote Section -->
+                <div id="quote-class" class="flex flex-row justify-start items-center gap-2">
+                    <!-- Quote -->
+                    <div class="quote-container max-w-md">
+                        <p id="quote-text" class="text-lg text-left italic"></p>
+                        <p id="quote-author" class="opacity-70 mt-2 text-right font-medium"></p>
+                    </div>
                 </div>
-                <div class="p-3 rounded-lg text-right">
+
+                <!-- Wallpaper Controls -->
+                <div class="absolute left-1/2 bottom-4 transform -translate-x-1/2">
+                    <div class="wallpaper-controls flex items-center justify-center space-x-2 bg-base-100 px-4 py-2 rounded-full shadow-lg">
+                        <button id="prev-wallpaper" class="btn btn-ghost btn-circle btn-sm" title="Previous Wallpaper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                            </svg>
+                        </button>
+                        <button id="pause-wallpaper" class="btn btn-ghost btn-circle btn-sm" title="Pause/Resume Wallpaper Rotation">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                            </svg>
+                        </button>
+                        <button id="next-wallpaper" class="btn btn-ghost btn-circle btn-sm" title="Next Wallpaper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Branding -->
+                <div id="brand-class" class="absolute bottom-0 right-0 px-4 py-2">
                     <a id="novatra-link" href="https://novatra.in" target="_blank" rel="noopener" class="font-bold text-2xl">ηovatra</a>
                 </div>
             </footer>

@@ -4,8 +4,12 @@ import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, saveCustom
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
 let currentExam = "jeeAdv";
+let wallpapersList = [];
 let customWallpaper = "";
+let currentWallpaperUrl = "";
 let backgroundBrightness = 0.4;
+let currentWallpaperIndex = -1;
+let wallpaperRotationPaused = false;
 
 const fallbackMotivationalQuotes = [
     { content: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
@@ -80,20 +84,50 @@ function setBackground() {
     backgroundElement.style.opacity = 0;
     document.documentElement.style.setProperty("--bg-brightness", backgroundBrightness);
 
-    fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/wallpapers.json")
-        .then((response) => response.json())
-        .then((data) => {
-            const images = data.images;
-            const imageList = Array.isArray(images) && images.length ? images : fallbackBackgrounds;
-            const randomIndex = Math.floor(Math.random() * imageList.length);
-            const selectedImage = imageList[randomIndex];
-            preloadAndSetBackground(selectedImage);
-        })
-        .catch((err) => {
-            console.warn("Failed To Load Backgrounds, Using Fallback.", err);
-            const randomIndex = Math.floor(Math.random() * fallbackBackgrounds.length);
-            preloadAndSetBackground(fallbackBackgrounds[randomIndex]);
+    if (browser) {
+        browser.storage.sync
+            .get(["wallpaperIndex", "wallpaperRotationPaused"])
+            .then((data) => {
+                if (data.wallpaperRotationPaused !== undefined) {
+                    wallpaperRotationPaused = data.wallpaperRotationPaused;
+                    updatePauseButtonIcon();
+                }
+
+                if (customWallpaper) {
+                    preloadAndSetBackground(customWallpaper);
+                    return;
+                }
+                loadWallpapers().then(() => {
+                    if (wallpaperRotationPaused && data.wallpaperIndex !== undefined && wallpapersList[data.wallpaperIndex]) {
+                        currentWallpaperIndex = data.wallpaperIndex;
+                        preloadAndSetBackground(wallpapersList[currentWallpaperIndex]);
+                    } else {
+                        changeWallpaper("random");
+                    }
+                });
+            })
+            .catch((err) => {
+                console.warn("Failed To Restore Wallpaper State :", err);
+
+                if (customWallpaper) {
+                    preloadAndSetBackground(customWallpaper);
+                    return;
+                }
+
+                loadWallpapers().then(() => {
+                    changeWallpaper("random");
+                });
+            });
+    } else {
+        if (customWallpaper) {
+            preloadAndSetBackground(customWallpaper);
+            return;
+        }
+
+        loadWallpapers().then(() => {
+            changeWallpaper("random");
         });
+    }
 
     function preloadAndSetBackground(url) {
         const img = new Image();
@@ -102,12 +136,77 @@ function setBackground() {
             setTimeout(() => {
                 backgroundElement.style.backgroundImage = `url(${url})`;
                 backgroundElement.style.opacity = 1;
+
+                currentWallpaperUrl = url;
+                updateWallpaperInfoButton(url);
             }, 500);
         };
         img.onerror = () => {
-            console.error("Failed To Preload Image:", url);
+            console.error("Failed To Preload Image :", url);
         };
     }
+}
+
+async function loadWallpapers() {
+    if (wallpapersList.length > 0) {
+        return;
+    }
+
+    try {
+        const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/wallpapers.json");
+        const data = await response.json();
+
+        if (Array.isArray(data.images) && data.images.length) {
+            wallpapersList = data.images;
+        } else {
+            wallpapersList = backgrounds;
+        }
+    } catch (err) {
+        console.warn("Failed To Load Backgrounds, Using Fallback.", err);
+        wallpapersList = backgrounds;
+    }
+}
+
+function changeWallpaper(direction) {
+    if (wallpapersList.length === 0) {
+        return;
+    }
+
+    const backgroundElement = document.querySelector(".background");
+    if (!backgroundElement) return;
+
+    backgroundElement.style.opacity = 0;
+
+    if (direction === "next") {
+        currentWallpaperIndex = (currentWallpaperIndex + 1) % wallpapersList.length;
+    } else if (direction === "prev") {
+        currentWallpaperIndex = (currentWallpaperIndex - 1 + wallpapersList.length) % wallpapersList.length;
+    } else {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * wallpapersList.length);
+        } while (wallpapersList.length > 1 && newIndex === currentWallpaperIndex);
+        currentWallpaperIndex = newIndex;
+    }
+    if (browser && wallpaperRotationPaused) {
+        browser.storage.sync.set({ wallpaperIndex: currentWallpaperIndex });
+    }
+
+    const url = wallpapersList[currentWallpaperIndex];
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+        setTimeout(() => {
+            backgroundElement.style.backgroundImage = `url(${url})`;
+            backgroundElement.style.opacity = 1;
+
+            currentWallpaperUrl = url;
+            updateWallpaperInfoButton(url);
+        }, 500);
+    };
+    img.onerror = () => {
+        console.error("Failed To Preload Image :", url);
+    };
 }
 
 function updateCountdown() {
@@ -166,13 +265,33 @@ function updateCountdown() {
     }
 }
 
+function updateWallpaperInfoButton(wallpaperUrl) {
+    const infoButton = document.getElementById("wallpaper-info-btn");
+    if (!infoButton) return;
+
+    let sourceUrl = "";
+    try {
+        sourceUrl = new URL(wallpaperUrl);
+
+        console.log(sourceUrl);
+    } catch (e) {
+        console.error("Invalid wallpaper URL:", e);
+        sourceUrl = "https://novatra.in";
+    }
+
+    infoButton.title = `Source: ${sourceUrl}`;
+    infoButton.dataset.sourceUrl = sourceUrl;
+}
+
 function setupEventListeners() {
     const customWallpaperInput = document.getElementById("custom-wallpaper");
     const brightnessSlider = document.getElementById("brightness-slider");
     const preferencesForm = document.getElementById("preferences-form");
+
     const optionsModal = document.getElementById("options-modal");
     const examSelector = document.getElementById("exam-selector");
     const saveMessage = document.getElementById("save-message");
+
     const customExamSection = document.getElementById("custom-exam-section");
     const customExamNameInput = document.getElementById("custom-exam-name");
     const customExamDateInput = document.getElementById("custom-exam-date");
@@ -183,11 +302,19 @@ function setupEventListeners() {
     const toggleBrand = document.getElementById("toggle-brand");
 
     const themeToggle = document.getElementById("theme-toggle");
+
     const jeeDate = document.getElementById("jee-date");
     const neetDate = document.getElementById("neet-date");
     const jeeAdvDate = document.getElementById("jeeadv-date");
+
     const musicBtn = document.getElementById("music-btn");
     const optionsLink = document.getElementById("options-link");
+
+    const wallpaperInfoBtn = document.getElementById("wallpaper-info-btn");
+
+    const nextWallpaperBtn = document.getElementById("next-wallpaper");
+    const prevWallpaperBtn = document.getElementById("prev-wallpaper");
+    const pauseWallpaperBtn = document.getElementById("pause-wallpaper");
 
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
     if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
@@ -209,7 +336,7 @@ function setupEventListeners() {
                 brightnessSlider.value = data.backgroundBrightness;
             } else {
                 brightnessSlider.value = 0.4;
-            } // Set custom exam data if available
+            }
             const customExam = getCustomExamData();
 
             if (customExam.name) {
@@ -221,7 +348,6 @@ function setupEventListeners() {
             if (hasValidCustomExam()) {
                 customExamDateInput.value = customExam.date.toISOString().split("T")[0];
 
-                // Update custom exam stat
                 const customExamStat = document.getElementById("custom-exam-stat");
                 const customExamStatTitle = document.getElementById("custom-exam-stat-title");
                 const customExamStatDate = document.getElementById("custom-exam-stat-date");
@@ -234,14 +360,12 @@ function setupEventListeners() {
             } else {
                 customExamDateInput.value = "";
 
-                // Hide custom exam stat if no custom exam
                 const customExamStat = document.getElementById("custom-exam-stat");
                 if (customExamStat) {
                     customExamStat.classList.add("hidden");
                 }
             }
 
-            // Show/hide custom exam section based on selection
             if (activeExam === "custom") {
                 customExamSection.classList.remove("hidden");
             } else {
@@ -252,7 +376,6 @@ function setupEventListeners() {
         });
     };
 
-    // Handle showing/hiding custom exam section when exam selector changes
     if (examSelector) {
         examSelector.addEventListener("change", function () {
             if (this.value === "custom") {
@@ -273,6 +396,42 @@ function setupEventListeners() {
             browser.storage.sync.set({ theme: document.documentElement.dataset.theme });
         });
     }
+    if (wallpaperInfoBtn) {
+        wallpaperInfoBtn.addEventListener("click", function () {
+            const sourceUrl = this.dataset.sourceUrl || "https://novatra.in";
+            window.open(sourceUrl, "_blank", "noopener,noreferrer");
+        });
+    }
+
+    if (nextWallpaperBtn) {
+        nextWallpaperBtn.addEventListener("click", function () {
+            changeWallpaper("next");
+        });
+    }
+
+    if (prevWallpaperBtn) {
+        prevWallpaperBtn.addEventListener("click", function () {
+            changeWallpaper("prev");
+        });
+    }
+    if (pauseWallpaperBtn) {
+        pauseWallpaperBtn.addEventListener("click", function () {
+            wallpaperRotationPaused = !wallpaperRotationPaused;
+            updatePauseButtonIcon();
+
+            if (browser) {
+                if (wallpaperRotationPaused) {
+                    browser.storage.sync.set({
+                        wallpaperRotationPaused,
+                        wallpaperIndex: currentWallpaperIndex,
+                    });
+                } else {
+                    browser.storage.sync.set({ wallpaperRotationPaused });
+                }
+            }
+        });
+    }
+
     if (musicBtn) {
         const musicModal = document.getElementById("music-modal");
         const youtubeForm = document.getElementById("youtube-form");
@@ -401,6 +560,8 @@ function setupEventListeners() {
                     quote: showQuote,
                     brand: showBrand,
                 },
+                wallpaperIndex: currentWallpaperIndex,
+                wallpaperRotationPaused: wallpaperRotationPaused,
             };
 
             browser.storage.sync
@@ -491,10 +652,10 @@ function setActiveExam(exam) {
 }
 
 function updateWidgetVisibility(showDateTime, showCountdown, showQuote, showBrand) {
-    const dateTimeElement = document.querySelector("header .px-4.py-2");
-    const countdownElement = document.querySelector("main .text-center");
-    const quoteElement = document.querySelector(".quote-container");
-    const brandElement = document.querySelector("#novatra-link").parentElement;
+    const dateTimeElement = document.getElementById("clock-class");
+    const countdownElement = document.getElementById("countdown-class");
+    const quoteElement = document.getElementById("quote-class");
+    const brandElement = document.getElementById("brand-class");
 
     if (dateTimeElement) {
         dateTimeElement.style.display = showDateTime ? "" : "none";
@@ -534,7 +695,12 @@ function loadUserPreferences() {
             backgroundBrightness = data.backgroundBrightness;
         }
 
-        // Load widget visibility preferences
+        // Restore wallpaper rotation state
+        if (data.wallpaperRotationPaused !== undefined) {
+            wallpaperRotationPaused = data.wallpaperRotationPaused;
+            // We'll update the icon after the DOM is fully loaded
+        }
+
         const toggleDateTime = document.getElementById("toggle-datetime");
         const toggleCountdown = document.getElementById("toggle-countdown");
         const toggleQuote = document.getElementById("toggle-quote");
@@ -560,14 +726,42 @@ function loadUserPreferences() {
 
 function initializePage() {
     updateDateTime();
+    updateCountdown();
     displayRandomQuote();
     setupEventListeners();
     loadUserPreferences();
-    updateCountdown();
+    updatePauseButtonIcon();
 
     setInterval(updateDateTime, 1000);
     setInterval(updateCountdown, 1000);
     setInterval(displayRandomQuote, 3600000);
+
+    setInterval(() => {
+        if (!wallpaperRotationPaused) {
+            changeWallpaper("next");
+        }
+    }, 5 * 60 * 1000);
 }
 
 document.addEventListener("DOMContentLoaded", initializePage);
+
+function updatePauseButtonIcon() {
+    const pauseButton = document.getElementById("pause-wallpaper");
+    if (!pauseButton) return;
+
+    if (wallpaperRotationPaused) {
+        pauseButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+            </svg>
+        `;
+        pauseButton.title = "Resume Wallpaper Rotation";
+    } else {
+        pauseButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+        `;
+        pauseButton.title = "Pause Wallpaper Rotation";
+    }
+}
