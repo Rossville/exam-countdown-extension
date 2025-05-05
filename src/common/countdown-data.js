@@ -1,5 +1,5 @@
 const jeeExamDate = new Date(2026, 0, 29); // 29 - 01 - 2026
-const neetExamDate = new Date(2026, 4, 4); // 04 - 04 - 2026
+const neetExamDate = new Date(2026, 4, 4); // 04 - 05 - 2026
 const jeeAdvExamDate = new Date(2025, 4, 18); // 18 - 05 - 2025
 
 let customExamName = "Custom Exam";
