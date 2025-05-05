@@ -100,72 +100,123 @@
                 </form>
                 <h3 class="font-bold text-xl mb-6 text-center text-primary">Preferences</h3>
 
-                <!-- Exam Dates -->
-                <div class="mb-8">
-                    <div class="stats stats-vertical w-full">
-                        <div class="stat">
-                            <div class="tooltip tooltip-bottom" data-tip="Tentative Date">
-                                <div class="stat-title">NEET</div>
-                                <div id="neet-date" class="stat-value text-lg">Loading ...</div>
-                            </div>
-                        </div>
-                        <div class="stat">
-                            <div class="tooltip tooltip-bottom" data-tip="Tentative Date">
-                                <div class="stat-title">JEE Main</div>
-                                <div id="jee-date" class="stat-value text-lg">Loading ...</div>
-                            </div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-title">JEE Advanced</div>
-                            <div id="jeeadv-date" class="stat-value text-lg">Loading ...</div>
-                        </div>
-                        <div id="custom-exam-stat" class="stat hidden">
-                            <div class="stat-title" id="custom-exam-stat-title">Custom Exam</div>
-                            <div id="custom-exam-stat-date" class="stat-value text-lg">Not set</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Exam Selection -->
                 <form id="preferences-form">
-                    <h4 class="font-semibold mb-3">Select Active Exam Countdown:</h4>
-                    <div class="form-control mb-6">
-                        <select id="exam-selector" class="select select-bordered w-full focus:outline-none">
-                            <option value="neet">NEET</option>
-                            <option value="jee">JEE Main</option>
-                            <option value="jeeAdv">JEE Advanced</option>
-                            <option value="custom">Custom Exam</option>
-                        </select>
-                    </div>
+                    <div class="tabs tabs-lift mb-6">
+                        <!-- Countdown Tab -->
+                        <input type="radio" name="preferences_tabs" class="tab" aria-label="Countdown" checked="checked" />
+                        <div class="tab-content bg-base-100 border-base-300 p-6">
+                            <!-- Exam Dates -->
+                            <div class="mb-8">
+                                <div class="stats stats-vertical w-full">
+                                    <div class="stat">
+                                        <div class="tooltip tooltip-bottom" data-tip="Tentative Date">
+                                            <div class="stat-title">NEET</div>
+                                            <div id="neet-date" class="stat-value text-lg">Loading ...</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="tooltip tooltip-bottom" data-tip="Tentative Date">
+                                            <div class="stat-title">JEE Main</div>
+                                            <div id="jee-date" class="stat-value text-lg">Loading ...</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-title">JEE Advanced</div>
+                                        <div id="jeeadv-date" class="stat-value text-lg">Loading ...</div>
+                                    </div>
+                                    <div id="custom-exam-stat" class="stat hidden">
+                                        <div class="stat-title" id="custom-exam-stat-title">Custom Exam</div>
+                                        <div id="custom-exam-stat-date" class="stat-value text-lg">Not set</div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Custom Exam Settings -->
-                    <div id="custom-exam-section" class="mb-6 hidden">
-                        <h4 class="font-semibold mb-3">Custom Exam Settings</h4>
-                        <div class="form-control mb-3">
-                            <input type="text" id="custom-exam-name" placeholder="Exam Name" class="input input-bordered w-full focus:outline-none" />
-                        </div>
-                        <div class="form-control mb-3">
-                            <div class="relative">
-                                <input type="date" id="custom-exam-date" class="input input-bordered w-full focus:outline-none" />
+                            <!-- Exam Selection -->
+                            <h4 class="font-semibold mb-3">Select Active Exam Countdown:</h4>
+                            <div class="form-control mb-6">
+                                <select id="exam-selector" class="select select-bordered w-full focus:outline-none">
+                                    <option value="neet">NEET</option>
+                                    <option value="jee">JEE Main</option>
+                                    <option value="jeeAdv">JEE Advanced</option>
+                                    <option value="custom">Custom Exam</option>
+                                </select>
+                            </div>
+
+                            <!-- Custom Exam Settings -->
+                            <div id="custom-exam-section" class="mb-6 hidden">
+                                <h4 class="font-semibold mb-3">Custom Exam Settings</h4>
+                                <div class="form-control mb-3">
+                                    <input type="text" id="custom-exam-name" placeholder="Exam Name" class="input input-bordered w-full focus:outline-none" />
+                                </div>
+                                <div class="form-control mb-3">
+                                    <div class="relative">
+                                        <input type="date" id="custom-exam-date" class="input input-bordered w-full focus:outline-none" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Custom Wallpaper Input -->
-                    <h4 class="font-semibold mb-3">Custom Wallpaper URL</h4>
-                    <div class="form-control mb-3">
-                        <input type="url" id="custom-wallpaper" placeholder="Paste image link here" class="input input-bordered w-full focus:outline-none" />
-                    </div>
-                    <div class="text-xs mb-6 opacity-70">Leave empty to use random wallpapers</div>
+                        <!-- Wallpaper Tab -->
+                        <input type="radio" name="preferences_tabs" class="tab" aria-label="Wallpaper" />
+                        <div class="tab-content bg-base-100 border-base-300 p-6">
+                            <!-- Custom Wallpaper Input -->
+                            <h4 class="font-semibold mb-3">Custom Wallpaper URL</h4>
+                            <div class="form-control mb-3">
+                                <input type="url" id="custom-wallpaper" placeholder="Paste image link here" class="input input-bordered w-full focus:outline-none" />
+                            </div>
+                            <div class="text-xs mb-6 opacity-70">Leave empty to use random wallpapers</div>
 
-                    <!-- Background Brightness Slider -->
-                    <h4 class="font-semibold mb-3">Background Brightness</h4>
-                    <div class="form-control mb-2">
-                        <input type="range" id="brightness-slider" class="range range-xs w-full" min="0.1" max="0.9" step="0.05" value="0.4" />
-                    </div>
-                    <div class="flex justify-between text-xs opacity-70 mb-6">
-                        <span>Darker</span>
-                        <span>Brighter</span>
+                            <!-- Background Brightness Slider -->
+                            <h4 class="font-semibold mb-3">Background Brightness</h4>
+                            <div class="form-control mb-2">
+                                <input type="range" id="brightness-slider" class="range range-xs w-full" min="0.1" max="0.9" step="0.05" value="0.4" />
+                            </div>
+                            <div class="flex justify-between text-xs opacity-70 mb-6">
+                                <span>Darker</span>
+                                <span>Brighter</span>
+                            </div>
+                        </div>
+
+                        <!-- Layout Tab -->
+                        <input type="radio" name="preferences_tabs" class="tab" aria-label="Layout" />
+                        <div class="tab-content bg-base-100 border-base-300 p-6">
+                            <h4 class="font-semibold mb-4">Toggle Widgets</h4>
+                            <div class="space-y-4">
+                                <!-- Date and Time Toggle -->
+                                <div class="form-control">
+                                    <label class="cursor-pointer label justify-start gap-4">
+                                        <input type="checkbox" id="toggle-datetime" class="toggle toggle-primary" checked />
+                                        <span class="label-text">Date And Time</span>
+                                    </label>
+                                </div>
+
+                                <!-- Countdown Toggle -->
+                                <div class="form-control">
+                                    <label class="cursor-pointer label justify-start gap-4">
+                                        <input type="checkbox" id="toggle-countdown" class="toggle toggle-primary" checked />
+                                        <span class="label-text">Exam Countdown</span>
+                                    </label>
+                                </div>
+
+                                <!-- Quote Toggle -->
+                                <div class="form-control">
+                                    <label class="cursor-pointer label justify-start gap-4">
+                                        <input type="checkbox" id="toggle-quote" class="toggle toggle-primary" checked />
+                                        <span class="label-text">Motivational Quote</span>
+                                    </label>
+                                </div>
+
+                                <!-- Brand Link Toggle -->
+                                <!-- 
+                                <div class="form-control">
+                                    <label class="cursor-pointer label justify-start gap-4">
+                                        <input type="checkbox" id="toggle-brand" class="toggle toggle-primary" checked />
+                                        <span class="label-text">Novatra Link</span>
+                                    </label>
+                                </div> 
+                                -->
+                            </div>
+                        </div>
                     </div>
 
                     <div class="modal-action">
