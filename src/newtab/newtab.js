@@ -1,41 +1,12 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, initStorage, saveCustomExamData, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, saveCustomExamData, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
 
-const currentDateElement = document.getElementById("current-date");
-const currentTimeElement = document.getElementById("current-time");
-
-const quoteTextElement = document.getElementById("quote-text");
-const quoteAuthorElement = document.getElementById("quote-author");
-
-const countdownDaysElement = document.getElementById("countdown-days");
-const countdownHoursElement = document.getElementById("countdown-hours");
-const countdownMonthsElement = document.getElementById("countdown-months");
-const countdownMinutesElement = document.getElementById("countdown-minutes");
-const countdownSecondsElement = document.getElementById("countdown-seconds");
-
-const countdownLabelElement = document.getElementById("countdown-label");
-
-const examBadgeElement = document.getElementById("exam-badge");
-
-const optionsLink = document.getElementById("options-link");
-const themeToggle = document.getElementById("theme-toggle");
-const musicBtn = document.getElementById("music-btn");
-
-var storage;
-
-if (process.env.EXTENSION_PUBLIC_BROWSER == "firefox") {
-    storage = browser.storage.sync;
-} else {
-    storage = chrome.storage.sync;
-}
-
-// Initialize countdown-data with storage API
-initStorage(storage);
+import { chrome } from "webextension-polyfill";
 
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
 let currentExam = "jeeAdv";
 let customWallpaper = "";
-let backgroundBrightness = 0.4; // Default brightness value
+let backgroundBrightness = 0.4;
 
 const fallbackMotivationalQuotes = [
     { content: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
@@ -57,6 +28,9 @@ const fallbackMotivationalQuotes = [
 
 function updateDateTime() {
     const now = new Date();
+    const currentDateElement = document.getElementById("current-date");
+    const currentTimeElement = document.getElementById("current-time");
+
 
     const dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     const formattedDate = now.toLocaleDateString("en-US", dateOptions);
@@ -68,6 +42,9 @@ function updateDateTime() {
 }
 
 function displayRandomQuote() {
+    const quoteTextElement = document.getElementById("quote-text");
+    const quoteAuthorElement = document.getElementById("quote-author");
+
     quoteTextElement.style.opacity = 0;
     quoteAuthorElement.style.opacity = 0;
 
@@ -134,6 +111,13 @@ function setRandomBackground() {
 }
 
 function updateCountdown() {
+    const countdownDaysElement = document.getElementById("countdown-days");
+    const countdownHoursElement = document.getElementById("countdown-hours");
+    const countdownMonthsElement = document.getElementById("countdown-months");
+    const countdownMinutesElement = document.getElementById("countdown-minutes");
+    const countdownSecondsElement = document.getElementById("countdown-seconds");
+    const countdownLabelElement = document.getElementById("countdown-label");
+    const examBadgeElement = document.getElementById("exam-badge");
     let timeRemaining;
     let examName;
 
@@ -193,9 +177,12 @@ function setupEventListeners() {
     const customExamNameInput = document.getElementById("custom-exam-name");
     const customExamDateInput = document.getElementById("custom-exam-date");
 
+    const themeToggle = document.getElementById("theme-toggle");
     const jeeDate = document.getElementById("jee-date");
     const neetDate = document.getElementById("neet-date");
     const jeeAdvDate = document.getElementById("jeeadv-date");
+    const musicBtn = document.getElementById("music-btn");
+    const optionsLink = document.getElementById("options-link");
 
     // Update exam dates in the modal
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
@@ -203,7 +190,7 @@ function setupEventListeners() {
     if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
-        storage.get().then((data) => {
+        chrome.storage.sync.get(null, (data) => {
             const activeExam = data.activeExam || "jee";
 
             examSelector.value = activeExam;
@@ -279,9 +266,7 @@ function setupEventListeners() {
         themeToggle.addEventListener("click", function () {
             document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
 
-            if (storage) {
-                storage.set({ theme: document.documentElement.dataset.theme });
-            }
+            chrome.storage.sync.set({ theme: document.documentElement.dataset.theme });
         });
     }
     if (musicBtn) {
@@ -294,8 +279,8 @@ function setupEventListeners() {
         musicBtn.addEventListener("click", function () {
             musicModal.showModal();
 
-            if (storage) {
-                storage.get(["youtubeUrl"]).then((data) => {
+            if (chrome) {
+                chrome.storage.sync.get(["youtubeUrl"], (data) => {
                     if (data.youtubeUrl) {
                         youtubeUrlInput.value = data.youtubeUrl;
                         if (youtubeEmbed.innerHTML === "") {
@@ -320,8 +305,8 @@ function setupEventListeners() {
                 event.preventDefault();
                 const musicUrl = youtubeUrlInput.value.trim();
                 if (musicUrl) {
-                    if (storage) {
-                        storage.set({ youtubeUrl: musicUrl });
+                    if (chrome.storage) {
+                        chrome.storage.sync.set({ youtubeUrl: musicUrl });
                     }
                     loadMusicEmbed(musicUrl);
                 }
@@ -388,7 +373,7 @@ function setupEventListeners() {
                 backgroundBrightness: brightness,
             };
 
-            storage.set(dataToSave, function () {
+            chrome.storage.sync.set(dataToSave, function () {
                 saveMessage.textContent = "Preferences Saved!";
                 saveMessage.style.color = "";
 
@@ -460,39 +445,35 @@ function setActiveExam(exam) {
     updateCountdown();
     updateNovatraLink(exam);
 
-    if (storage) {
-        storage.set({ activeExam: exam });
+    if (chrome.storage) {
+        chrome.storage.sync.set({ activeExam: exam });
     }
 }
 
 function loadUserPreferences() {
-    if (storage) {
-        storage.get().then((data) => {
-            if (data.theme) {
-                document.documentElement.dataset.theme = data.theme;
-            }
+    chrome.storage.sync.get(null, (data) => {
+        if (data.theme) {
+            document.documentElement.dataset.theme = data.theme;
+        }
 
-            if (data.activeExam) {
-                setActiveExam(data.activeExam);
-            } else {
-                // If no exam is selected, at least update the link
-                updateNovatraLink(currentExam);
-            }
+        if (data.activeExam) {
+            setActiveExam(data.activeExam);
+        } else {
+            // If no exam is selected, at least update the link
+            updateNovatraLink(currentExam);
+        }
 
-            if (data.customWallpaper) {
-                customWallpaper = data.customWallpaper;
-            }
+        if (data.customWallpaper) {
+            customWallpaper = data.customWallpaper;
+        }
 
-            if (data.backgroundBrightness !== undefined) {
-                backgroundBrightness = data.backgroundBrightness;
-            }
+        if (data.backgroundBrightness !== undefined) {
+            backgroundBrightness = data.backgroundBrightness;
+        }
 
-            setBackground();
-        });
-    } else {
         updateNovatraLink(currentExam);
         setBackground();
-    }
+    });
 }
 
 function initializePage() {

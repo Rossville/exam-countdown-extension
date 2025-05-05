@@ -1,4 +1,4 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate } from "./common/countdown-data.js";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate } from "../common/countdown-data"
 
 const countdowns = {
     jee: {
