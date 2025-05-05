@@ -279,8 +279,7 @@ function updateWallpaperInfoButton(wallpaperUrl) {
         sourceUrl = "https://novatra.in";
     }
 
-    infoButton.title = `Source: ${sourceUrl}`;
-    infoButton.dataset.sourceUrl = sourceUrl;
+    infoButton.href = sourceUrl;
 }
 
 function setupEventListeners() {
@@ -309,8 +308,6 @@ function setupEventListeners() {
 
     const musicBtn = document.getElementById("music-btn");
     const optionsLink = document.getElementById("options-link");
-
-    const wallpaperInfoBtn = document.getElementById("wallpaper-info-btn");
 
     const nextWallpaperBtn = document.getElementById("next-wallpaper");
     const prevWallpaperBtn = document.getElementById("prev-wallpaper");
@@ -394,12 +391,6 @@ function setupEventListeners() {
             document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
 
             browser.storage.sync.set({ theme: document.documentElement.dataset.theme });
-        });
-    }
-    if (wallpaperInfoBtn) {
-        wallpaperInfoBtn.addEventListener("click", function () {
-            const sourceUrl = this.dataset.sourceUrl || "https://novatra.in";
-            window.open(sourceUrl, "_blank", "noopener,noreferrer");
         });
     }
 
