@@ -321,10 +321,29 @@ function setupEventListeners() {
 
                 const videoId = youtubeMatch[1];
                 const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?si=Y_vXpY6wIItrmI9x`;
-                youtubeEmbed.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+
+                while (youtubeEmbed.firstChild) {
+                    youtubeEmbed.removeChild(youtubeEmbed.firstChild);
+                }
+                const iframe = document.createElement('iframe');
+                iframe.width = '100%';
+                iframe.height = '100%';
+                iframe.src = embedUrl;
+                iframe.title = 'YouTube video player';
+                iframe.frameBorder = '0';
+                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope');
+                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                youtubeEmbed.appendChild(iframe);
             } else {
                 youtubeEmbed.classList.remove("hidden");
-                youtubeEmbed.innerHTML = "<p class='text-center py-4'>Invalid YouTube URL</p>";
+
+                while (youtubeEmbed.firstChild) {
+                    youtubeEmbed.removeChild(youtubeEmbed.firstChild);
+                }
+                const errorParagraph = document.createElement('p');
+                errorParagraph.className = 'text-center py-4';
+                errorParagraph.textContent = 'Invalid YouTube URL';
+                youtubeEmbed.appendChild(errorParagraph);
             }
         }
     }
