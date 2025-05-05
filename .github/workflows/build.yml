@@ -39,7 +39,7 @@ jobs:
       - name: Upload firefox build output
         uses: actions/upload-artifact@v4
         with:
-          name: firefox
+          name: firefox-${{ github.sha }}
           path: dist/*
 
       - name: Create chrome build
@@ -50,5 +50,5 @@ jobs:
       - name: Upload chrome build output
         uses: actions/upload-artifact@v4
         with:
-          name: chrome
+          name: chrome-${{ github.sha }}
           path: dist/*
