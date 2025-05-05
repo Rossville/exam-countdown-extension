@@ -1,5 +1,3 @@
-# JEE & NEET Countdown Extension
-
 This extension provides countdown timers for the JEE and NEET exams, allowing users to track the time remaining until each exam. Users can customize their preferences to show or hide countdowns based on their interests.
 
 ## Installation
