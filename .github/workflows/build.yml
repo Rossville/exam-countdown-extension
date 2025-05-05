@@ -31,11 +31,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build the extension
+      - name: Create firefox build
+        env:
+          TARGET_BROWSER: firefox
         run: pnpm build
 
-      - name: Upload build output
+      - name: Upload firefox build output
         uses: actions/upload-artifact@v4
         with:
-          name: exam-countdown
+          name: firefox
+          path: dist/*
+
+      - name: Create chrome build
+        env:
+          TARGET_BROWSER: chrome
+        run: pnpm build
+
+      - name: Upload chrome build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome
           path: dist/*
