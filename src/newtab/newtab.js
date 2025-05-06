@@ -6,7 +6,6 @@ const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://
 let currentExam = "jeeAdv";
 let wallpapersList = [];
 let customWallpaper = "";
-let currentWallpaperUrl = "";
 let backgroundBrightness = 0.4;
 let currentWallpaperIndex = -1;
 let wallpaperRotationPaused = false;
@@ -31,120 +30,122 @@ const fallbackMotivationalQuotes = [
 
 function updateDateTime() {
     const now = new Date();
+
     const currentDateElement = document.getElementById("current-date");
     const currentTimeElement = document.getElementById("current-time");
 
     const dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = now.toLocaleDateString("en-US", dateOptions);
-    currentDateElement.textContent = formattedDate;
-
     const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
+
     const formattedTime = now.toLocaleTimeString("en-US", timeOptions);
+    const formattedDate = now.toLocaleDateString("en-US", dateOptions);
+
     currentTimeElement.textContent = formattedTime;
+    currentDateElement.textContent = formattedDate;
 }
 
-function displayRandomQuote() {
+async function displayRandomQuote() {
     const quoteTextElement = document.getElementById("quote-text");
     const quoteAuthorElement = document.getElementById("quote-author");
 
     quoteTextElement.style.opacity = 0;
     quoteAuthorElement.style.opacity = 0;
 
-    let fallbackIndex = Math.floor(Math.random() * fallbackMotivationalQuotes.length);
-    let fallbackQuote = fallbackMotivationalQuotes[fallbackIndex];
+    try {
+        const response = await fetch("http://api.quotable.io/quotes/random?tags=inspirational|motivational|productivity|education|wisdom|success|work");
+        const data = await response.json();
 
-    fetch("http://api.quotable.io/quotes/random?tags=inspirational|motivational|productivity|education|wisdom|success|work")
-        .then((res) => res.json())
-        .then((data) => {
-            const quote = {
-                content: data[0].content,
-                author: data[0].author,
-            };
-            displayQuote(quote);
-        })
-        .catch(() => {
-            displayQuote(fallbackQuote);
-        });
+        const quote = {
+            content: data[0].content,
+            author: data[0].author,
+        };
+        displayQuote(quote);
+    } catch (error) {
+        const fallbackIndex = Math.floor(Math.random() * fallbackMotivationalQuotes.length);
+        const fallbackQuote = fallbackMotivationalQuotes[fallbackIndex];
+        displayQuote(fallbackQuote);
+    }
 
     function displayQuote(q) {
         setTimeout(() => {
             quoteTextElement.textContent = `"${q.content}"`;
             quoteAuthorElement.textContent = `— ${q.author}`;
-
             quoteTextElement.style.opacity = 1;
             quoteAuthorElement.style.opacity = 1;
         }, 300);
     }
 }
 
-function setBackground() {
+async function setBackground() {
     const backgroundElement = document.querySelector(".background");
     if (!backgroundElement) return;
 
     backgroundElement.style.opacity = 0;
     document.documentElement.style.setProperty("--bg-brightness", backgroundBrightness);
 
-    if (browser) {
-        browser.storage.sync
-            .get(["wallpaperIndex", "wallpaperRotationPaused"])
-            .then((data) => {
-                if (data.wallpaperRotationPaused !== undefined) {
-                    wallpaperRotationPaused = data.wallpaperRotationPaused;
-                    updatePauseButtonIcon();
-                }
+    if (!browser) {
+        return handleDefaultBackground();
+    }
 
-                if (customWallpaper) {
-                    preloadAndSetBackground(customWallpaper);
-                    return;
-                }
-                loadWallpapers().then(() => {
-                    if (wallpaperRotationPaused && data.wallpaperIndex !== undefined && wallpapersList[data.wallpaperIndex]) {
-                        currentWallpaperIndex = data.wallpaperIndex;
-                        preloadAndSetBackground(wallpapersList[currentWallpaperIndex]);
-                    } else {
-                        changeWallpaper("random");
-                    }
-                });
-            })
-            .catch((err) => {
-                console.warn("Failed To Restore Wallpaper State :", err);
+    try {
+        const { wallpaperIndex, wallpaperRotationPaused: paused } = await browser.storage.sync.get([
+            "wallpaperIndex",
+            "wallpaperRotationPaused",
+        ]);
 
-                if (customWallpaper) {
-                    preloadAndSetBackground(customWallpaper);
-                    return;
-                }
-
-                loadWallpapers().then(() => {
-                    changeWallpaper("random");
-                });
-            });
-    } else {
-        if (customWallpaper) {
-            preloadAndSetBackground(customWallpaper);
-            return;
+        if (paused !== undefined) {
+            wallpaperRotationPaused = paused;
+            updatePauseButtonIcon();
         }
 
-        loadWallpapers().then(() => {
+        if (customWallpaper) {
+            return preloadAndSetBackground(customWallpaper);
+        }
+
+        await loadWallpapers();
+
+        if (wallpaperRotationPaused && wallpaperIndex !== undefined && wallpapersList[wallpaperIndex]) {
+            currentWallpaperIndex = wallpaperIndex;
+            preloadAndSetBackground(wallpapersList[currentWallpaperIndex]);
+        } else {
             changeWallpaper("random");
-        });
+        }
+    } catch (err) {
+        console.warn("Failed to restore wallpaper state:", err);
+        handleDefaultBackground();
+    }
+}
+
+async function handleDefaultBackground() {
+    if (customWallpaper) {
+        preloadAndSetBackground(customWallpaper);
+        return;
     }
 
-    function preloadAndSetBackground(url) {
-        const img = new Image();
-        img.src = url;
-        img.onload = () => {
-            setTimeout(() => {
-                backgroundElement.style.backgroundImage = `url(${url})`;
-                backgroundElement.style.opacity = 1;
+    await loadWallpapers();
+    changeWallpaper("random");
+}
 
-                currentWallpaperUrl = url;
-                updateWallpaperInfoButton(url);
-            }, 500);
-        };
-        img.onerror = () => {
-            console.error("Failed To Preload Image :", url);
-        };
-    }
+function preloadAndSetBackground(url) {
+    const backgroundElement = document.querySelector(".background");
+    const img = new Image();
+
+    let currentWallpaperUrl = "";
+    
+    img.src = url;
+    img.onload = () => {
+        setTimeout(() => {
+            backgroundElement.style.backgroundImage = `url(${url})`;
+            backgroundElement.style.opacity = 1;
+
+            currentWallpaperUrl = url;
+            updateWallpaperInfoButton(url);
+        }, 500);
+    };
+    
+    img.onerror = () => {
+        console.error("Failed To Preload Image :", url);
+    };
 }
 
 async function loadWallpapers() {
@@ -154,23 +155,22 @@ async function loadWallpapers() {
 
     try {
         const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/wallpapers.json");
-        const data = await response.json();
+        const { images = [] } = await response.json();
 
-        if (Array.isArray(data.images) && data.images.length) {
-            wallpapersList = data.images;
+        if (images.length > 0) {
+            wallpapersList = images;
         } else {
+            console.warn("No images found in data. Using fallback.");
             wallpapersList = backgrounds;
         }
     } catch (err) {
-        console.warn("Failed To Load Backgrounds, Using Fallback.", err);
+        console.warn("Failed To Load Backgrounds. Using Fallback.", err);
         wallpapersList = backgrounds;
     }
 }
 
 function changeWallpaper(direction) {
-    if (wallpapersList.length === 0) {
-        return;
-    }
+    if (wallpapersList.length === 0) return;
 
     const backgroundElement = document.querySelector(".background");
     if (!backgroundElement) return;
@@ -188,25 +188,14 @@ function changeWallpaper(direction) {
         } while (wallpapersList.length > 1 && newIndex === currentWallpaperIndex);
         currentWallpaperIndex = newIndex;
     }
+
     if (browser && wallpaperRotationPaused) {
         browser.storage.sync.set({ wallpaperIndex: currentWallpaperIndex });
     }
 
-    const url = wallpapersList[currentWallpaperIndex];
-    const img = new Image();
-    img.src = url;
-    img.onload = () => {
-        setTimeout(() => {
-            backgroundElement.style.backgroundImage = `url(${url})`;
-            backgroundElement.style.opacity = 1;
 
-            currentWallpaperUrl = url;
-            updateWallpaperInfoButton(url);
-        }, 500);
-    };
-    img.onerror = () => {
-        console.error("Failed To Preload Image :", url);
-    };
+    const url = wallpapersList[currentWallpaperIndex];
+    preloadAndSetBackground(url);
 }
 
 function updateCountdown() {
@@ -217,11 +206,11 @@ function updateCountdown() {
     const countdownSecondsElement = document.getElementById("countdown-seconds");
     const countdownLabelElement = document.getElementById("countdown-label");
     const examBadgeElement = document.getElementById("exam-badge");
+    const toggleSeconds = document.getElementById("toggle-seconds");
+    const showSeconds = toggleSeconds ? toggleSeconds.checked : true;
+
     let timeRemaining;
     let examName;
-    const toggleSeconds = document.getElementById("toggle-seconds");
-    let showSeconds = toggleSeconds ? toggleSeconds.checked : true;
-    const secondsContainer = document.getElementById('seconds-container');   
 
     switch (currentExam) {
         case "jee":
@@ -270,12 +259,12 @@ function updateCountdown() {
 
 function updateWallpaperInfoButton(wallpaperUrl) {
     const infoButton = document.getElementById("wallpaper-info-btn");
+    let sourceUrl = "";
+
     if (!infoButton) return;
 
-    let sourceUrl = "";
     try {
         sourceUrl = new URL(wallpaperUrl);
-
         console.log(sourceUrl);
     } catch (e) {
         console.error("Invalid wallpaper URL:", e);
@@ -285,44 +274,65 @@ function updateWallpaperInfoButton(wallpaperUrl) {
     infoButton.href = sourceUrl;
 }
 
+function updateExamDropdownLabels({ neetExamDate, jeeExamDate, jeeAdvExamDate, customExam }) {
+    const examSelector = document.getElementById("exam-selector");
+    const format = (date) => date.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+
+    const labelMap = {
+        neet: neetExamDate instanceof Date ? `NEET (${format(neetExamDate)})` : "NEET",
+        jee: jeeExamDate instanceof Date ? `JEE Main (${format(jeeExamDate)})` : "JEE Main",
+        jeeAdv: jeeAdvExamDate instanceof Date ? `JEE Advanced (${format(jeeAdvExamDate)})` : "JEE Advanced",
+        custom: (customExam && customExam.name && customExam.date instanceof Date)
+            ? `${customExam.name} (${format(customExam.date)})`
+            : "Custom Exam"
+    };
+
+    for (const option of examSelector.options) {
+        const value = option.value;
+        if (labelMap[value]) {
+            option.textContent = labelMap[value];
+        }
+    }
+}
+
+
 function setupEventListeners() {
-    const customWallpaperInput = document.getElementById("custom-wallpaper");
-    const brightnessSlider = document.getElementById("brightness-slider");
-    const preferencesForm = document.getElementById("preferences-form");
+    const optionsLink = document.getElementById("options-link");
+    const themeToggle = document.getElementById("theme-toggle");
+    const musicBtn = document.getElementById("music-btn");
 
     const optionsModal = document.getElementById("options-modal");
+    const preferencesForm = document.getElementById("preferences-form");
+
     const examSelector = document.getElementById("exam-selector");
-    const saveMessage = document.getElementById("save-message");
+    const customExam = getCustomExamData();
 
     const customExamSection = document.getElementById("custom-exam-section");
     const customExamNameInput = document.getElementById("custom-exam-name");
     const customExamDateInput = document.getElementById("custom-exam-date");
 
+    const customWallpaperInput = document.getElementById("custom-wallpaper");
+    const brightnessSlider = document.getElementById("brightness-slider");
+    
     const toggleDateTime = document.getElementById("toggle-datetime");
     const toggleCountdown = document.getElementById("toggle-countdown");
     const toggleQuote = document.getElementById("toggle-quote");
     const toggleSeconds = document.getElementById("toggle-seconds");
     const toggleBrand = document.getElementById("toggle-brand");
 
-    const themeToggle = document.getElementById("theme-toggle");
-
-    const jeeDate = document.getElementById("jee-date");
-    const neetDate = document.getElementById("neet-date");
-    const jeeAdvDate = document.getElementById("jeeadv-date");
-
-    const musicBtn = document.getElementById("music-btn");
-    const optionsLink = document.getElementById("options-link");
+    const saveMessage = document.getElementById("save-message");
 
     const nextWallpaperBtn = document.getElementById("next-wallpaper");
     const prevWallpaperBtn = document.getElementById("prev-wallpaper");
     const pauseWallpaperBtn = document.getElementById("pause-wallpaper");
 
-    const dateOptions = { year: "numeric", month: "long", day: "numeric" };
-    if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
-    if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
-    if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
         browser.storage.sync.get().then((data) => {
+            
             const activeExam = data.activeExam || "jeeAdv";
 
             examSelector.value = activeExam;
@@ -372,6 +382,13 @@ function setupEventListeners() {
             } else {
                 customExamSection.classList.add("hidden");
             }
+
+            updateExamDropdownLabels({
+                neetExamDate,
+                jeeExamDate,
+                jeeAdvExamDate,
+                customExam
+            });        
 
             optionsModal.showModal();
         });
@@ -489,7 +506,7 @@ function setupEventListeners() {
                 iframe.height = "100%";
                 iframe.src = embedUrl;
                 iframe.title = "YouTube video player";
-                iframe.frameBorder = "0";
+                iframe.style.border = "none";
                 iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope");
                 iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
                 youtubeEmbed.appendChild(iframe);
@@ -525,6 +542,7 @@ function setupEventListeners() {
 
             if (activeExam === "custom") {
                 customName = customExamNameInput.value.trim();
+                
                 if (!customName) {
                     customName = "Custom Exam";
                 }
@@ -595,18 +613,6 @@ function setupEventListeners() {
     if (brightnessSlider) {
         brightnessSlider.addEventListener("input", function () {
             document.documentElement.style.setProperty("--bg-brightness", this.value);
-        });
-    }
-
-    if (examSelector) {
-        examSelector.addEventListener("change", function () {
-            const selectedExam = this.value;
-
-            if (selectedExam === "custom") {
-                customExamSection.classList.remove("hidden");
-            } else {
-                customExamSection.classList.add("hidden");
-            }
         });
     }
 
