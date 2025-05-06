@@ -219,24 +219,31 @@ function updateCountdown() {
     const examBadgeElement = document.getElementById("exam-badge");
     let timeRemaining;
     let examName;
+    const toggleSeconds = document.getElementById("toggle-seconds");
+    let showSeconds = toggleSeconds ? toggleSeconds.checked : true;
+    const secondsContainer = document.getElementById('seconds-container');
+
+    if (secondsContainer) {
+        secondsContainer.style.display = showSeconds ? 'flex' : 'none';
+    }    
 
     switch (currentExam) {
         case "jee":
-            timeRemaining = getTimeRemaining(jeeExamDate);
+            timeRemaining = getTimeRemaining(jeeExamDate, showSeconds);
             examName = "JEE Main";
             break;
         case "neet":
-            timeRemaining = getTimeRemaining(neetExamDate);
+            timeRemaining = getTimeRemaining(neetExamDate, showSeconds);
             examName = "NEET";
             break;
         case "jeeAdv":
-            timeRemaining = getTimeRemaining(jeeAdvExamDate);
+            timeRemaining = getTimeRemaining(jeeAdvExamDate, showSeconds);
             examName = "JEE Advanced";
             break;
         case "custom":
             if (hasValidCustomExam()) {
                 const customExam = getCustomExamData();
-                timeRemaining = getTimeRemaining(customExam.date);
+                timeRemaining = getTimeRemaining(customExam.date, showSeconds);
                 examName = customExam.name;
             } else {
                 timeRemaining = { total: 0, month: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -298,6 +305,7 @@ function setupEventListeners() {
     const toggleDateTime = document.getElementById("toggle-datetime");
     const toggleCountdown = document.getElementById("toggle-countdown");
     const toggleQuote = document.getElementById("toggle-quote");
+    const toggleSeconds = document.getElementById("toggle-seconds");
     const toggleBrand = document.getElementById("toggle-brand");
 
     const themeToggle = document.getElementById("theme-toggle");
@@ -513,6 +521,7 @@ function setupEventListeners() {
             let showDateTime = toggleDateTime ? toggleDateTime.checked : true;
             let showCountdown = toggleCountdown ? toggleCountdown.checked : true;
             let showQuote = toggleQuote ? toggleQuote.checked : true;
+            let showSeconds = toggleSeconds ? toggleSeconds.checked : true;
             let showBrand = toggleBrand ? toggleBrand.checked : true;
 
             let customName = "";
@@ -695,6 +704,7 @@ function loadUserPreferences() {
         const toggleDateTime = document.getElementById("toggle-datetime");
         const toggleCountdown = document.getElementById("toggle-countdown");
         const toggleQuote = document.getElementById("toggle-quote");
+        const toggleSeconds = document.getElementById("toggle-seconds");
         const toggleBrand = document.getElementById("toggle-brand");
 
         if (data.widgetVisibility) {

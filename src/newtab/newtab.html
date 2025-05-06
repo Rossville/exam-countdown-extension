@@ -93,7 +93,7 @@
                             </span>
                             Minutes
                         </div>
-                        <div class="flex flex-col">
+                        <div class="flex flex-col" id="seconds-container">
                             <span class="countdown text-7xl py-1">
                                 <span id="countdown-seconds" style="--value: 0" aria-live="polite"></span>
                             </span>
@@ -262,6 +262,14 @@
                                 <label class="cursor-pointer label justify-start gap-4">
                                     <input type="checkbox" id="toggle-quote" class="toggle toggle-primary" checked />
                                     <span class="label-text">Motivational Quote</span>
+                                </label>
+                            </div>
+
+                            <!-- Seconds Toggle -->
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-4">
+                                    <input type="checkbox" id="toggle-seconds" class="toggle toggle-primary" checked />
+                                    <span class="label-text">Seconds Countdown</span>
                                 </label>
                             </div>
 

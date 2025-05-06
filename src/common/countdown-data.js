@@ -89,16 +89,22 @@ function hasValidCustomExam() {
     return customExamDate && !isNaN(customExamDate.getTime());
 }
 
-function getTimeRemaining(endDate) {
+function getTimeRemaining(endDate, showSeconds = true) {
     const total = endDate - new Date();
 
     const month = Math.floor(total / (1000 * 60 * 60 * 24 * 30));
     const days = Math.floor((total % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
     const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((total % (1000 * 60)) / 1000);
 
-    return { total, month, days, hours, minutes, seconds };
+    let result = { total, month, days, hours, minutes };
+
+    if (showSeconds) {
+        const seconds = Math.floor((total % (1000 * 60)) / 1000);
+        result.seconds = seconds;
+    }
+
+    return result;
 }
 
 function formatTime(time) {
