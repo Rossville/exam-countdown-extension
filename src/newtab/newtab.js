@@ -208,6 +208,9 @@ function updateCountdown() {
     const toggleSeconds = document.getElementById("toggle-seconds");
     const showSeconds = toggleSeconds ? toggleSeconds.checked : true;
 
+    let timeRemaining;
+    let examName;
+
     switch (currentExam) {
         case "jee":
             timeRemaining = getTimeRemaining(jeeExamDate, showSeconds);
