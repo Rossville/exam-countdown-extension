@@ -582,18 +582,6 @@ function setupEventListeners() {
         });
     }
 
-    if (examSelector) {
-        examSelector.addEventListener("change", function () {
-            const selectedExam = this.value;
-
-            if (selectedExam === "custom") {
-                customExamSection.classList.remove("hidden");
-            } else {
-                customExamSection.classList.add("hidden");
-            }
-        });
-    }
-
     if (customExamSection) {
         customExamSection.classList.add("hidden");
     }
