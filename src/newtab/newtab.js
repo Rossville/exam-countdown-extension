@@ -221,11 +221,7 @@ function updateCountdown() {
     let examName;
     const toggleSeconds = document.getElementById("toggle-seconds");
     let showSeconds = toggleSeconds ? toggleSeconds.checked : true;
-    const secondsContainer = document.getElementById('seconds-container');
-
-    if (secondsContainer) {
-        secondsContainer.style.display = showSeconds ? 'flex' : 'none';
-    }    
+    const secondsContainer = document.getElementById('seconds-container');   
 
     switch (currentExam) {
         case "jee":
@@ -558,6 +554,7 @@ function setupEventListeners() {
                     dateTime: showDateTime,
                     countdown: showCountdown,
                     quote: showQuote,
+                    seconds: showSeconds,
                     brand: showBrand,
                 },
                 wallpaperIndex: currentWallpaperIndex,
@@ -576,7 +573,7 @@ function setupEventListeners() {
                     backgroundBrightness = brightness;
                     setBackground();
 
-                    updateWidgetVisibility(showDateTime, showCountdown, showQuote, showBrand);
+                    updateWidgetVisibility(showDateTime, showCountdown, showQuote, showSeconds, showBrand);
 
                     setTimeout(function () {
                         saveMessage.textContent = "";
@@ -651,10 +648,11 @@ function setActiveExam(exam) {
     }
 }
 
-function updateWidgetVisibility(showDateTime, showCountdown, showQuote, showBrand) {
+function updateWidgetVisibility(showDateTime, showCountdown, showQuote, showSeconds, showBrand) {
     const dateTimeElement = document.getElementById("clock-class");
     const countdownElement = document.getElementById("countdown-class");
     const quoteElement = document.getElementById("quote-class");
+    const secondsElement = document.getElementById("seconds-container");
     const brandElement = document.getElementById("brand-class");
 
     if (dateTimeElement) {
@@ -667,6 +665,10 @@ function updateWidgetVisibility(showDateTime, showCountdown, showQuote, showBran
 
     if (quoteElement) {
         quoteElement.style.display = showQuote ? "" : "none";
+    }
+
+    if (secondsElement) {
+        secondsElement.style.display = showSeconds ? "" : "none";
     }
 
     if (brandElement) {
@@ -712,10 +714,11 @@ function loadUserPreferences() {
             if (toggleDateTime) toggleDateTime.checked = data.widgetVisibility.dateTime;
             if (toggleCountdown) toggleCountdown.checked = data.widgetVisibility.countdown;
             if (toggleQuote) toggleQuote.checked = data.widgetVisibility.quote;
+            if (toggleSeconds) toggleSeconds.checked = data.widgetVisibility.seconds;
             if (toggleBrand) toggleBrand.checked = data.widgetVisibility.brand;
 
             // Apply visibility settings
-            updateWidgetVisibility(data.widgetVisibility.dateTime, data.widgetVisibility.countdown, data.widgetVisibility.quote, data.widgetVisibility.brand);
+            updateWidgetVisibility(data.widgetVisibility.dateTime, data.widgetVisibility.countdown, data.widgetVisibility.quote, data.widgetVisibility.seconds, data.widgetVisibility.brand);
         }
 
         console.log(currentExam);
