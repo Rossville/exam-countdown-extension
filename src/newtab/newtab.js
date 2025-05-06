@@ -319,7 +319,7 @@ function setupEventListeners() {
     if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
         browser.storage.sync.get().then((data) => {
-            const activeExam = data.activeExam || "jee";
+            const activeExam = data.activeExam || "jeeAdv";
 
             examSelector.value = activeExam;
 
