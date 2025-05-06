@@ -16,24 +16,25 @@ function parseDateString(dateStr) {
 
 async function fetchExamDates() {
     try {
-        const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/exam-dates.json");
+        const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@main/assets/exam-info.json");
         if (!response.ok) {
             throw new Error(`Failed to fetch exam dates: ${response.status}`);
         }
 
-        const data = await response.json();
+        const exams = await response.json();
 
-        if (data.jee) {
-            jeeExamDate = parseDateString(data.jee);
-        }
+        exams.forEach(exam => {
+            const examName = exam.name.toLowerCase();
+            const examDate = parseDateString(exam.date);
 
-        if (data.neet) {
-            neetExamDate = parseDateString(data.neet);
-        }
-
-        if (data.jeeadv) {
-            jeeAdvExamDate = parseDateString(data.jeeadv);
-        }
+            if (examName.includes("jee main")) {
+                jeeExamDate = examDate;
+            } else if (examName.includes("neet")) {
+                neetExamDate = examDate;
+            } else if (examName.includes("advanced")) {
+                jeeAdvExamDate = examDate;
+            }
+        });
 
         console.log("Exam Date Updated From Remote Source");
         return true;
@@ -42,6 +43,7 @@ async function fetchExamDates() {
         return false;
     }
 }
+
 
 async function loadCustomExamData() {
     if (!browser.storage) return;
