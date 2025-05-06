@@ -6,7 +6,6 @@ const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://
 let currentExam = "jeeAdv";
 let wallpapersList = [];
 let customWallpaper = "";
-let currentWallpaperUrl = "";
 let backgroundBrightness = 0.4;
 let currentWallpaperIndex = -1;
 let wallpaperRotationPaused = false;
@@ -130,6 +129,8 @@ async function handleDefaultBackground() {
 function preloadAndSetBackground(url) {
     const backgroundElement = document.querySelector(".background");
     const img = new Image();
+
+    let currentWallpaperUrl = "";
     
     img.src = url;
     img.onload = () => {
@@ -258,12 +259,12 @@ function updateCountdown() {
 
 function updateWallpaperInfoButton(wallpaperUrl) {
     const infoButton = document.getElementById("wallpaper-info-btn");
+    let sourceUrl = "";
+
     if (!infoButton) return;
 
-    let sourceUrl = "";
     try {
         sourceUrl = new URL(wallpaperUrl);
-
         console.log(sourceUrl);
     } catch (e) {
         console.error("Invalid wallpaper URL:", e);
@@ -274,32 +275,33 @@ function updateWallpaperInfoButton(wallpaperUrl) {
 }
 
 function setupEventListeners() {
-    const customWallpaperInput = document.getElementById("custom-wallpaper");
-    const brightnessSlider = document.getElementById("brightness-slider");
-    const preferencesForm = document.getElementById("preferences-form");
+    const optionsLink = document.getElementById("options-link");
+    const themeToggle = document.getElementById("theme-toggle");
+    const musicBtn = document.getElementById("music-btn");
 
     const optionsModal = document.getElementById("options-modal");
+    const preferencesForm = document.getElementById("preferences-form");
+
+    const jeeDate = document.getElementById("jee-date");
+    const neetDate = document.getElementById("neet-date");
+    const jeeAdvDate = document.getElementById("jeeadv-date");
+
     const examSelector = document.getElementById("exam-selector");
-    const saveMessage = document.getElementById("save-message");
 
     const customExamSection = document.getElementById("custom-exam-section");
     const customExamNameInput = document.getElementById("custom-exam-name");
     const customExamDateInput = document.getElementById("custom-exam-date");
 
+    const customWallpaperInput = document.getElementById("custom-wallpaper");
+    const brightnessSlider = document.getElementById("brightness-slider");
+    
     const toggleDateTime = document.getElementById("toggle-datetime");
     const toggleCountdown = document.getElementById("toggle-countdown");
     const toggleQuote = document.getElementById("toggle-quote");
     const toggleSeconds = document.getElementById("toggle-seconds");
     const toggleBrand = document.getElementById("toggle-brand");
 
-    const themeToggle = document.getElementById("theme-toggle");
-
-    const jeeDate = document.getElementById("jee-date");
-    const neetDate = document.getElementById("neet-date");
-    const jeeAdvDate = document.getElementById("jeeadv-date");
-
-    const musicBtn = document.getElementById("music-btn");
-    const optionsLink = document.getElementById("options-link");
+    const saveMessage = document.getElementById("save-message");
 
     const nextWallpaperBtn = document.getElementById("next-wallpaper");
     const prevWallpaperBtn = document.getElementById("prev-wallpaper");
@@ -477,7 +479,7 @@ function setupEventListeners() {
                 iframe.height = "100%";
                 iframe.src = embedUrl;
                 iframe.title = "YouTube video player";
-                iframe.frameBorder = "0";
+                iframe.style.border = "none";
                 iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope");
                 iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
                 youtubeEmbed.appendChild(iframe);
@@ -513,6 +515,7 @@ function setupEventListeners() {
 
             if (activeExam === "custom") {
                 customName = customExamNameInput.value.trim();
+                
                 if (!customName) {
                     customName = "Custom Exam";
                 }
