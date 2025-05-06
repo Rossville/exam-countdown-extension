@@ -282,10 +282,6 @@ function setupEventListeners() {
     const optionsModal = document.getElementById("options-modal");
     const preferencesForm = document.getElementById("preferences-form");
 
-    const jeeDate = document.getElementById("jee-date");
-    const neetDate = document.getElementById("neet-date");
-    const jeeAdvDate = document.getElementById("jeeadv-date");
-
     const examSelector = document.getElementById("exam-selector");
 
     const customExamSection = document.getElementById("custom-exam-section");
@@ -308,9 +304,6 @@ function setupEventListeners() {
     const pauseWallpaperBtn = document.getElementById("pause-wallpaper");
 
     const dateOptions = { year: "numeric", month: "long", day: "numeric" };
-    if (jeeDate) jeeDate.textContent = jeeExamDate.toLocaleDateString("en-US", dateOptions);
-    if (neetDate) neetDate.textContent = neetExamDate.toLocaleDateString("en-US", dateOptions);
-    if (jeeAdvDate) jeeAdvDate.textContent = jeeAdvExamDate.toLocaleDateString("en-US", dateOptions);
     const showOptionsModal = function () {
         browser.storage.sync.get().then((data) => {
             const activeExam = data.activeExam || "jeeAdv";
