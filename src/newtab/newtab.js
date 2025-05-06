@@ -274,6 +274,32 @@ function updateWallpaperInfoButton(wallpaperUrl) {
     infoButton.href = sourceUrl;
 }
 
+function updateExamDropdownLabels({ neetExamDate, jeeExamDate, jeeAdvExamDate, customExam }) {
+    const examSelector = document.getElementById("exam-selector");
+    const format = (date) => date.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+
+    const labelMap = {
+        neet: neetExamDate instanceof Date ? `NEET (${format(neetExamDate)})` : "NEET",
+        jee: jeeExamDate instanceof Date ? `JEE Main (${format(jeeExamDate)})` : "JEE Main",
+        jeeAdv: jeeAdvExamDate instanceof Date ? `JEE Advanced (${format(jeeAdvExamDate)})` : "JEE Advanced",
+        custom: (customExam && customExam.name && customExam.date instanceof Date)
+            ? `${customExam.name} (${format(customExam.date)})`
+            : "Custom Exam"
+    };
+
+    for (const option of examSelector.options) {
+        const value = option.value;
+        if (labelMap[value]) {
+            option.textContent = labelMap[value];
+        }
+    }
+}
+
+
 function setupEventListeners() {
     const optionsLink = document.getElementById("options-link");
     const themeToggle = document.getElementById("theme-toggle");
@@ -283,6 +309,7 @@ function setupEventListeners() {
     const preferencesForm = document.getElementById("preferences-form");
 
     const examSelector = document.getElementById("exam-selector");
+    const customExam = getCustomExamData();
 
     const customExamSection = document.getElementById("custom-exam-section");
     const customExamNameInput = document.getElementById("custom-exam-name");
@@ -303,9 +330,9 @@ function setupEventListeners() {
     const prevWallpaperBtn = document.getElementById("prev-wallpaper");
     const pauseWallpaperBtn = document.getElementById("pause-wallpaper");
 
-    const dateOptions = { year: "numeric", month: "long", day: "numeric" };
     const showOptionsModal = function () {
         browser.storage.sync.get().then((data) => {
+            
             const activeExam = data.activeExam || "jeeAdv";
 
             examSelector.value = activeExam;
@@ -355,6 +382,13 @@ function setupEventListeners() {
             } else {
                 customExamSection.classList.add("hidden");
             }
+
+            updateExamDropdownLabels({
+                neetExamDate,
+                jeeExamDate,
+                jeeAdvExamDate,
+                customExam
+            });        
 
             optionsModal.showModal();
         });
