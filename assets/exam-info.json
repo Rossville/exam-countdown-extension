@@ -1,0 +1,21 @@
+[
+    {
+      "name": "JEE Main",
+      "link": "https://novatra.in/exams/jee-main/",
+      "date": "29-01-2026",
+      "default": false
+    },
+    {
+      "name": "NEET",
+      "link": "https://novatra.in/exams/neet/",
+      "date": "04-05-2026",
+      "default": false
+    },
+    {
+      "name": "JEE Advanced",
+      "link": "https://novatra.in/exams/jee-advanced/",
+      "date": "18-05-2025",
+      "default": true
+    }
+  ]
+  
