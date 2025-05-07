@@ -828,6 +828,31 @@ function loadUserPreferences() {
 	});
 }
 
+async function refetchData() {
+	try {
+		browser.runtime
+			.sendMessage({ action: "fetchExamDates" })
+			.then((response) => {
+				console.log(response.status);
+			})
+			.catch(console.error);
+
+		browser.runtime
+			.sendMessage({ action: "fetchWallpapers" })
+			.then((response) => {
+				console.log(response.status);
+			})
+			.catch(console.error);
+
+		alert("Successfully Refetched Data!");
+	} catch (error) {
+		console.error("Error Refetching Data :", error);
+		alert("Failed To Refetch Data. Check The Console For More Details");
+	}
+}
+
+document.getElementById("refetch-data-btn").addEventListener("click", refetchData);
+
 function initializePage() {
 	updateDateTime();
 	updateCountdown();
