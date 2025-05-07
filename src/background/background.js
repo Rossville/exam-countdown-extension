@@ -1,4 +1,4 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate } from "../common/countdown-data"
+import { jeeExamDate, neetExamDate, jeeAdvExamDate } from "../newtab/newtab.js"
 import browser from "webextension-polyfill";
 
 const countdowns = {
