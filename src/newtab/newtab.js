@@ -4,7 +4,7 @@ let customExamName = "Custom Exam";
 let customExamDate = null;
 
 async function loadCustomExamData() {
-	if (!browser.storage) return;
+	if (!browser.storage || !browser.storage.sync) return;
 
 	try {
 		const data = await browser.storage.sync.get(["customExamName", "customExamDate"]);
@@ -21,7 +21,7 @@ async function loadCustomExamData() {
 }
 
 function saveCustomExamData(name, date) {
-	if (!browser.storage) return false;
+	if (!browser.storage || !browser.storage.sync) return false;
 
 	customExamName = name || "Custom Exam";
 	customExamDate = date;
@@ -57,7 +57,7 @@ function getTimeRemaining(endDate, showSeconds = true) {
 	const hours = Math.floor((total % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 	const minutes = Math.floor((total % (1000 * 60 * 60)) / (1000 * 60));
 
-	let result = {total, month, days, hours, minutes};
+	let result = { total, month, days, hours, minutes };
 
 	if (showSeconds) {
 		const seconds = Math.floor((total % (1000 * 60)) / 1000);
@@ -77,21 +77,21 @@ let currentWallpaperIndex = -1;
 let wallpaperRotationPaused = false;
 
 const fallbackMotivationalQuotes = [
-	{content: "The best way to predict the future is to create it.", author: "Abraham Lincoln"},
-	{content: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill"},
-	{content: "Believe you can and you're halfway there.", author: "Theodore Roosevelt"},
-	{content: "It always seems impossible until it's done.", author: "Nelson Mandela"},
-	{content: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela"},
-	{content: "The only way to do great work is to love what you do.", author: "Steve Jobs"},
-	{content: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson"},
-	{content: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt"},
-	{content: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.", author: "Dr. Seuss"},
-	{content: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs"},
-	{content: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke"},
-	{content: "The expert in anything was once a beginner.", author: "Helen Hayes"},
-	{content: "The secret of getting ahead is getting started.", author: "Mark Twain"},
-	{content: "Learning is never done without errors and defeat.", author: "Vladimir Lenin"},
-	{content: "The only place where success comes before work is in the dictionary.", author: "Vidal Sassoon"},
+	{ content: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
+	{ content: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
+	{ content: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+	{ content: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+	{ content: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+	{ content: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+	{ content: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+	{ content: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+	{ content: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.", author: "Dr. Seuss" },
+	{ content: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+	{ content: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
+	{ content: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+	{ content: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+	{ content: "Learning is never done without errors and defeat.", author: "Vladimir Lenin" },
+	{ content: "The only place where success comes before work is in the dictionary.", author: "Vidal Sassoon" },
 ];
 
 function updateDateTime() {
@@ -100,8 +100,8 @@ function updateDateTime() {
 	const currentDateElement = document.getElementById("current-date");
 	const currentTimeElement = document.getElementById("current-time");
 
-	const dateOptions = {weekday: "long", year: "numeric", month: "long", day: "numeric"};
-	const timeOptions = {hour: "2-digit", minute: "2-digit", hour12: true};
+	const dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+	const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: true };
 
 	const formattedTime = now.toLocaleTimeString("en-US", timeOptions);
 	const formattedDate = now.toLocaleDateString("en-US", dateOptions);
@@ -154,7 +154,7 @@ async function setBackground() {
 	}
 
 	try {
-		const {wallpaperIndex, wallpaperRotationPaused: paused} = await browser.storage.sync.get(["wallpaperIndex", "wallpaperRotationPaused"]);
+		const { wallpaperIndex, wallpaperRotationPaused: paused } = await browser.storage.sync.get(["wallpaperIndex", "wallpaperRotationPaused"]);
 
 		if (paused !== undefined) {
 			wallpaperRotationPaused = paused;
@@ -212,22 +212,26 @@ function preloadAndSetBackground(url) {
 }
 
 async function loadWallpapers() {
-	if (wallpapersList.length > 0) {
+	if (Array.isArray(wallpapersList) && wallpapersList.length > 0) {
+		return;
+	}
+
+	if (!browser.storage || !browser.storage.sync) {
 		return;
 	}
 
 	try {
-		const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/wallpapers.json");
-		const {images = []} = await response.json();
+		const storedData = await browser.storage.sync.get("wallpapers");
+		const images = storedData.wallpapers || [];
 
-		if (images.length > 0) {
+		if (Array.isArray(images) && images.length > 0) {
 			wallpapersList = images;
 		} else {
-			console.warn("No images found in data. Using fallback.");
+			console.warn("No Images Found In Data Using Fallback");
 			wallpapersList = backgrounds;
 		}
-	} catch (err) {
-		console.warn("Failed To Load Backgrounds. Using Fallback.", err);
+	} catch (error) {
+		console.warn("Failed To Load Backgrounds. Using Fallback.", error);
 		wallpapersList = backgrounds;
 	}
 }
@@ -253,7 +257,7 @@ function changeWallpaper(direction) {
 	}
 
 	if (browser && wallpaperRotationPaused) {
-		browser.storage.sync.set({wallpaperIndex: currentWallpaperIndex});
+		browser.storage.sync.set({ wallpaperIndex: currentWallpaperIndex });
 	}
 
 	const url = wallpapersList[currentWallpaperIndex];
@@ -261,7 +265,7 @@ function changeWallpaper(direction) {
 }
 
 async function loadExamDates() {
-	const {countdowns} = await browser.storage.sync.get("countdowns");
+	const { countdowns } = await browser.storage.sync.get("countdowns");
 
 	if (!countdowns) throw new Error("Countdowns not found in storage.");
 
@@ -321,7 +325,7 @@ async function updateCountdown() {
 				timeRemaining = getTimeRemaining(customExam.date, showSeconds);
 				examName = customExam.name;
 			} else {
-				timeRemaining = {total: 0, month: 0, days: 0, hours: 0, minutes: 0, seconds: 0};
+				timeRemaining = { total: 0, month: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
 				examName = "Custom Exam";
 			}
 			break;
@@ -364,7 +368,7 @@ function updateWallpaperInfoButton(wallpaperUrl) {
 	infoButton.href = sourceUrl;
 }
 
-async function updateExamDropdownLabels({customExam}) {
+async function updateExamDropdownLabels({ customExam }) {
 	const examSelector = document.getElementById("exam-selector");
 	const format = (date) =>
 		date.toLocaleDateString("en-US", {
@@ -373,7 +377,7 @@ async function updateExamDropdownLabels({customExam}) {
 			year: "numeric",
 		});
 
-	const {countdowns} = await browser.storage.sync.get("countdowns");
+	const { countdowns } = await browser.storage.sync.get("countdowns");
 
 	const jeeExamDate = countdowns?.jee?.date ? new Date(countdowns.jee.date) : new Date(2026, 0, 29);
 	const neetExamDate = countdowns?.neet?.date ? new Date(countdowns.neet.date) : new Date(2026, 4, 4);
@@ -459,7 +463,7 @@ function setupEventListeners() {
 				if (customExamStat && customExamStatTitle && customExamStatDate) {
 					customExamStat.classList.remove("hidden");
 					customExamStatTitle.textContent = customExam.name;
-					customExamStatDate.textContent = customExam.date.toLocaleDateString("en-US", {year: "numeric", month: "long", day: "numeric"});
+					customExamStatDate.textContent = customExam.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 				}
 			} else {
 				customExamDateInput.value = "";
@@ -501,7 +505,7 @@ function setupEventListeners() {
 		themeToggle.addEventListener("click", function () {
 			document.documentElement.dataset.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
 
-			browser.storage.sync.set({theme: document.documentElement.dataset.theme});
+			browser.storage.sync.set({ theme: document.documentElement.dataset.theme });
 		});
 	}
 
@@ -528,7 +532,7 @@ function setupEventListeners() {
 						wallpaperIndex: currentWallpaperIndex,
 					});
 				} else {
-					browser.storage.sync.set({wallpaperRotationPaused});
+					browser.storage.sync.set({ wallpaperRotationPaused });
 				}
 			}
 		});
@@ -571,7 +575,7 @@ function setupEventListeners() {
 				const musicUrl = youtubeUrlInput.value.trim();
 				if (musicUrl) {
 					if (browser.storage) {
-						browser.storage.sync.set({youtubeUrl: musicUrl});
+						browser.storage.sync.set({ youtubeUrl: musicUrl });
 					}
 					loadMusicEmbed(musicUrl);
 				}
@@ -740,7 +744,7 @@ function setActiveExam(exam) {
 	updateNovatraLink(exam);
 
 	if (browser.storage) {
-		browser.storage.sync.set({activeExam: exam});
+		browser.storage.sync.set({ activeExam: exam });
 	}
 }
 
@@ -867,4 +871,4 @@ function updatePauseButtonIcon() {
 	}
 }
 
-export {getTimeRemaining, getCustomExamData, hasValidCustomExam, loadCustomExamData};
+export { getTimeRemaining, getCustomExamData, hasValidCustomExam, loadCustomExamData };
