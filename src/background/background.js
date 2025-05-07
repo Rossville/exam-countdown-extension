@@ -17,7 +17,12 @@ const countdowns = {
 };
 
 browser.runtime.onInstalled.addListener(() => {
-    browser.storage.sync.set({ countdowns });
+    browser.storage.sync.set({ 
+        countdowns, 
+        showJEE: true, 
+        showNEET: true, 
+        showJEEADV: true 
+    });
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -27,20 +32,4 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true;
     }
-});
-
-browser.storage.onChanged.addListener((changes, area) => {
-    if (area === "sync" && changes.countdowns) {
-        countdowns.jee.isActive = changes.countdowns.newValue.jee.isActive;
-        countdowns.neet.isActive = changes.countdowns.newValue.neet.isActive;
-        countdowns.jeeAdv.isActive = changes.countdowns.newValue.jeeAdv.isActive;
-    }
-});
-
-browser.runtime.onInstalled.addListener(function () {
-    browser.storage.sync.set({
-        showJEE: true,
-        showNEET: true,
-        showJEEADV: true,
-    });
 });

@@ -888,4 +888,4 @@ function updatePauseButtonIcon() {
     }
 }
 
-export { jeeExamDate, neetExamDate, jeeAdvExamDate };
+export { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam };

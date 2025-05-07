@@ -1,4 +1,4 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam } from "../common/countdown-data.js";
+import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam } from "../newtab/newtab.js";
 import browser from "webextension-polyfill";
 
 function updateCountdown() {
