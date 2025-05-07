@@ -1,49 +1,7 @@
 import browser from "webextension-polyfill";
 
-let jeeExamDate = new Date(2026, 0, 29); // 29 - 01 - 2026
-let neetExamDate = new Date(2026, 4, 4); // 04 - 05 - 2026
-let jeeAdvExamDate = new Date(2026, 4, 18); // 18 - 05 - 2025
-
 let customExamName = "Custom Exam";
 let customExamDate = null;
-
-function parseDateString(dateStr) {
-    if (!dateStr) return null;
-
-    const [day, month, year] = dateStr.split("-").map((num) => parseInt(num, 10));
-    return new Date(year, month - 1, day);
-}
-
-async function fetchExamDates() {
-    try {
-        const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@main/assets/exam-info.json");
-        if (!response.ok) {
-            throw new Error(`Failed to fetch exam dates: ${response.status}`);
-        }
-
-        const exams = await response.json();
-
-        exams.forEach(exam => {
-            const examName = exam.name;
-            const examDate = parseDateString(exam.date);
-
-            if (examName == "jeeAdv") {
-                jeeAdvExamDate = examDate;
-            } else if (examName.includes("neet")) {
-                neetExamDate = examDate;
-            } else if (examName == "jee") {
-                jeeExamDate = examDate;
-            }
-        });
-
-        console.log("Exam Date Updated From Remote Source");
-        return true;
-    } catch (error) {
-        console.error("Error Fetching Exam Dates", error);
-        return false;
-    }
-}
-
 
 async function loadCustomExamData() {
     if (!browser.storage) return;
@@ -108,10 +66,6 @@ function getTimeRemaining(endDate, showSeconds = true) {
 
     return result;
 }
-
-fetchExamDates()
-    .then(() => loadCustomExamData())
-    .catch((error) => console.error("Error during initialization:", error));
 
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
@@ -310,7 +264,18 @@ function changeWallpaper(direction) {
     preloadAndSetBackground(url);
 }
 
-function updateCountdown() {
+async function loadExamDates() {
+    const { countdowns } = await browser.storage.sync.get("countdowns");
+
+    if (!countdowns) throw new Error("Countdowns not found in storage.");
+
+    window.jeeExamDate = new Date(countdowns.jee.date);
+    window.neetExamDate = new Date(countdowns.neet.date);
+    window.jeeAdvExamDate = new Date(countdowns.jeeAdv.date);
+}
+
+
+async function updateCountdown() {
     const countdownDaysElement = document.getElementById("countdown-days");
     const countdownHoursElement = document.getElementById("countdown-hours");
     const countdownMonthsElement = document.getElementById("countdown-months");
@@ -323,6 +288,25 @@ function updateCountdown() {
 
     let timeRemaining;
     let examName;
+    
+    const storedData = await browser.storage.sync.get(["countdowns"]);
+
+    let jeeExamDate = new Date(2026, 0, 29);  // default fallback
+    let neetExamDate = new Date(2026, 4, 4);  
+    let jeeAdvExamDate = new Date(2026, 4, 18); 
+    
+    if (storedData.countdowns) {
+        if (storedData.countdowns.jee?.date) {
+            jeeExamDate = new Date(storedData.countdowns.jee.date);
+        }
+        if (storedData.countdowns.neet?.date) {
+            neetExamDate = new Date(storedData.countdowns.neet.date);
+        }
+        if (storedData.countdowns.jeeAdv?.date) {
+            jeeAdvExamDate = new Date(storedData.countdowns.jeeAdv.date);
+        }
+    }
+    
 
     switch (currentExam) {
         case "jee":
@@ -386,21 +370,29 @@ function updateWallpaperInfoButton(wallpaperUrl) {
     infoButton.href = sourceUrl;
 }
 
-function updateExamDropdownLabels({ neetExamDate, jeeExamDate, jeeAdvExamDate, customExam }) {
+async function updateExamDropdownLabels({ customExam }) {
     const examSelector = document.getElementById("exam-selector");
-    const format = (date) => date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-    });
+    const format = (date) =>
+        date.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+
+    const { countdowns } = await browser.storage.sync.get("countdowns");
+
+    const jeeExamDate = countdowns?.jee?.date ? new Date(countdowns.jee.date) : new Date(2026, 0, 29);
+    const neetExamDate = countdowns?.neet?.date ? new Date(countdowns.neet.date) : new Date(2026, 4, 4);
+    const jeeAdvExamDate = countdowns?.jeeAdv?.date ? new Date(countdowns.jeeAdv.date) : new Date(2026, 4, 18);
 
     const labelMap = {
-        neet: neetExamDate instanceof Date ? `NEET (${format(neetExamDate)})` : "NEET",
-        jee: jeeExamDate instanceof Date ? `JEE Main (${format(jeeExamDate)})` : "JEE Main",
-        jeeAdv: jeeAdvExamDate instanceof Date ? `JEE Advanced (${format(jeeAdvExamDate)})` : "JEE Advanced",
-        custom: (customExam && customExam.name && customExam.date instanceof Date)
-            ? `${customExam.name} (${format(customExam.date)})`
-            : "Custom Exam"
+        neet: `NEET (${format(neetExamDate)})`,
+        jee: `JEE Main (${format(jeeExamDate)})`,
+        jeeAdv: `JEE Advanced (${format(jeeAdvExamDate)})`,
+        custom:
+            customExam && customExam.name && customExam.date instanceof Date
+                ? `${customExam.name} (${format(customExam.date)})`
+                : "Custom Exam",
     };
 
     for (const option of examSelector.options) {
@@ -410,7 +402,6 @@ function updateExamDropdownLabels({ neetExamDate, jeeExamDate, jeeAdvExamDate, c
         }
     }
 }
-
 
 function setupEventListeners() {
     const optionsLink = document.getElementById("options-link");
@@ -496,9 +487,6 @@ function setupEventListeners() {
             }
 
             updateExamDropdownLabels({
-                neetExamDate,
-                jeeExamDate,
-                jeeAdvExamDate,
                 customExam
             });        
 
@@ -853,6 +841,7 @@ function initializePage() {
     setupEventListeners();
     loadUserPreferences();
     updatePauseButtonIcon();
+    loadCustomExamData();
 
     setInterval(updateDateTime, 1000);
     setInterval(updateCountdown, 1000);
@@ -888,4 +877,4 @@ function updatePauseButtonIcon() {
     }
 }
 
-export { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam };
+export { getTimeRemaining, getCustomExamData, hasValidCustomExam };

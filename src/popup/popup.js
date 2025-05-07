@@ -1,7 +1,15 @@
-import { jeeExamDate, neetExamDate, jeeAdvExamDate, getTimeRemaining, getCustomExamData, hasValidCustomExam } from "../newtab/newtab.js";
+import { getTimeRemaining, getCustomExamData, hasValidCustomExam } from "../newtab/newtab.js";
 import browser from "webextension-polyfill";
 
-function updateCountdown() {
+async function updateCountdown() {
+    const storedData = await browser.storage.sync.get("countdowns");
+    const countdowns = storedData.countdowns || {};
+
+    const jeeExamDate = countdowns.jee?.date ? new Date(countdowns.jee.date) : new Date(2026, 0, 29);
+    const neetExamDate = countdowns.neet?.date ? new Date(countdowns.neet.date) : new Date(2026, 4, 4);
+    const jeeAdvExamDate = countdowns.jeeAdv?.date ? new Date(countdowns.jeeAdv.date) : new Date(2026, 4, 18);
+
+
     // JEE Main countdown
     const jeeTime = getTimeRemaining(jeeExamDate);
     if (jeeTime.total <= 0) {
@@ -24,7 +32,9 @@ function updateCountdown() {
         document.getElementById("jee-adv-hours").style = `--value:${jeeAdvTime.hours}`;
         document.getElementById("jee-adv-minutes").style = `--value:${jeeAdvTime.minutes}`;
         document.getElementById("jee-adv-seconds").style = `--value:${jeeAdvTime.seconds}`;
-    } // NEET countdown
+    }
+
+    // NEET countdown
     const neetTime = getTimeRemaining(neetExamDate);
     if (neetTime.total <= 0) {
         document.getElementById("neet-timer").innerHTML = "<p class='font-medium text-success'>Exam day has arrived!</p>";
