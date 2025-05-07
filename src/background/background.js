@@ -79,11 +79,23 @@ browser.runtime.onStartup.addListener(() => {
 	fetchWallpapers();
 });
 
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.action === "getCountdowns") {
-		browser.storage.sync.get("countdowns").then((data) => {
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+	try {
+		if (message.action === "getCountdowns") {
+			const data = await browser.storage.sync.get("countdowns");
 			sendResponse(data.countdowns);
-		});
-		return true;
+		} else if (message.action === "fetchExamDates") {
+			await fetchExamDates();
+			sendResponse({ status: "Exam Dates Fetched Successfully" });
+		} else if (message.action === "fetchWallpapers") {
+			await fetchWallpapers();
+			sendResponse({ status: "Wallpapers Fetched Successfully" });
+		} else {
+			sendResponse({ error: "Unknown Action" });
+		}
+	} catch (error) {
+		console.error("Error Handling Message :", message.action, error);
+		sendResponse({ error: "An Error Occured While Processing Requests" });
 	}
+	return true;
 });
