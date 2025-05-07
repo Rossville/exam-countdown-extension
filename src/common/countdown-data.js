@@ -24,15 +24,15 @@ async function fetchExamDates() {
         const exams = await response.json();
 
         exams.forEach(exam => {
-            const examName = exam.name.toLowerCase();
+            const examName = exam.name;
             const examDate = parseDateString(exam.date);
 
-            if (examName.includes("jee main")) {
-                jeeExamDate = examDate;
+            if (examName == "jeeAdv") {
+                jeeAdvExamDate = examDate;
             } else if (examName.includes("neet")) {
                 neetExamDate = examDate;
-            } else if (examName.includes("advanced")) {
-                jeeAdvExamDate = examDate;
+            } else if (examName == "jee") {
+                jeeExamDate = examDate;
             }
         });
 
