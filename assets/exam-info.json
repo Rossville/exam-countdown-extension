@@ -9,12 +9,12 @@
 		"name": "neet",
 		"link": "https://novatra.in/exams/neet/",
 		"date": "04-05-2026",
-		"default": true
+		"default": false
 	},
 	{
 		"name": "jeeAdv",
 		"link": "https://novatra.in/exams/jee-advanced/",
 		"date": "18-05-2025",
-		"default": false
+		"default": true
 	}
 ]
