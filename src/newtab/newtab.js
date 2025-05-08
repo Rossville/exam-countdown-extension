@@ -77,7 +77,7 @@ let wallpaperRotationPaused = false;
 
 let currentExam = "jeeAdv";
 
-(async function setDefaultExam() {
+async function setDefaultExam() {
 	try {
 		const examInfo = await browser.storage.sync.get("exams");
 
@@ -102,7 +102,7 @@ let currentExam = "jeeAdv";
 	} catch (error) {
 		console.error("Error Retriving Exam Info : ", error);
 	}
-})();
+}
 
 const fallbackMotivationalQuotes = [
 	{ content: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
@@ -743,26 +743,24 @@ function setupEventListeners() {
 	}
 }
 
-function updateNovatraLink(exam) {
+async function updateNovatraLink(exam) {
 	const novatraLink = document.getElementById("novatra-link");
 	if (!novatraLink) return;
 
-	switch (exam) {
-		case "jee":
-			novatraLink.href = "https://novatra.in/exams/jee-main/";
-			break;
-		case "jeeAdv":
-			novatraLink.href = "https://novatra.in/exams/jee-advanced/";
-			break;
-		case "neet":
-			novatraLink.href = "https://novatra.in/exams/neet/";
-			break;
-		case "custom":
+	try {
+		const examData = await browser.storage.sync.get("exams");
+
+		if (Array.isArray(examData.exams)) {
+			const examInfo = examData.exams.find((e) => e.name === exam);
+
+			novatraLink.href = examInfo ? examInfo.link : "https://novatra.in/";
+		} else {
+			console.error("Exams Data Is Not An Array : ", examData.exams);
 			novatraLink.href = "https://novatra.in/";
-			break;
-		default:
-			novatraLink.href = "https://novatra.in/";
-			break;
+		}
+	} catch (error) {
+		console.error("Error Retrieving Exam Info : ", error);
+		novatraLink.href = "https://novatra.in/";
 	}
 }
 
@@ -883,6 +881,7 @@ document.getElementById("refetch-data-btn").addEventListener("click", refetchDat
 
 function initializePage() {
 	updateDateTime();
+	setDefaultExam();
 	updateCountdown();
 	loadCustomExamData();
 	displayRandomQuote();
