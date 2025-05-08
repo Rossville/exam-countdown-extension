@@ -69,12 +69,40 @@ function getTimeRemaining(endDate, showSeconds = true) {
 
 const backgrounds = ["https://www.ghibli.jp/gallery/kimitachi016.jpg", "https://www.ghibli.jp/gallery/redturtle024.jpg", "https://www.ghibli.jp/gallery/marnie022.jpg", "https://www.ghibli.jp/gallery/kazetachinu050.jpg"];
 
-let currentExam = "jeeAdv";
 let wallpapersList = [];
 let customWallpaper = "";
 let backgroundBrightness = 0.4;
 let currentWallpaperIndex = -1;
 let wallpaperRotationPaused = false;
+
+let currentExam = "jeeAdv";
+
+(async function setDefaultExam() {
+	try {
+		const examInfo = await browser.storage.sync.get("exams");
+
+		if (Array.isArray(examInfo.exams)) {
+			let defaultExamFound = false;
+
+			examInfo.exams.forEach((exam) => {
+				console.log(exam);
+
+				if (exam.default === true) {
+					currentExam = exam.name;
+					defaultExamFound = true;
+				}
+			});
+
+			if (!defaultExamFound) {
+				console.warn("No Defaut Exam Found! Using Fallback :", currentExam);
+			}
+		} else {
+			console.error("Exams Data Is Not An Array : ", examInfo.exams);
+		}
+	} catch (error) {
+		console.error("Error Retriving Exam Info : ", error);
+	}
+})();
 
 const fallbackMotivationalQuotes = [
 	{ content: "The best way to predict the future is to create it.", author: "Abraham Lincoln" },
@@ -856,11 +884,11 @@ document.getElementById("refetch-data-btn").addEventListener("click", refetchDat
 function initializePage() {
 	updateDateTime();
 	updateCountdown();
+	loadCustomExamData();
 	displayRandomQuote();
 	setupEventListeners();
 	loadUserPreferences();
 	updatePauseButtonIcon();
-	loadCustomExamData();
 
 	setInterval(updateDateTime, 1000);
 	setInterval(updateCountdown, 1000);
