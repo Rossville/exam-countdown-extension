@@ -1,21 +1,20 @@
 [
-    {
-      "name": "jee",
-      "link": "https://novatra.in/exams/jee-main/",
-      "date": "29-01-2026",
-      "default": false
-    },
-    {
-      "name": "neet",
-      "link": "https://novatra.in/exams/neet/",
-      "date": "04-05-2026",
-      "default": false
-    },
-    {
-      "name": "jeeAdv",
-      "link": "https://novatra.in/exams/jee-advanced/",
-      "date": "18-05-2025",
-      "default": true
-    }
-  ]
-  
+	{
+		"name": "jee",
+		"link": "https://novatra.in/exams/jee-main/",
+		"date": "29-01-2026",
+		"default": false
+	},
+	{
+		"name": "neet",
+		"link": "https://novatra.in/exams/neet/",
+		"date": "04-05-2026",
+		"default": true
+	},
+	{
+		"name": "jeeAdv",
+		"link": "https://novatra.in/exams/jee-advanced/",
+		"date": "18-05-2025",
+		"default": false
+	}
+]
