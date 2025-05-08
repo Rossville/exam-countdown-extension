@@ -8,21 +8,31 @@ function parseDateString(dateStr) {
 
 async function fetchExamDates() {
 	try {
-		const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@main/assets/exam-info.json");
+		const response = await fetch("https://cdn.jsdelivr.net/gh/NovatraX/exam-countdown-extension@refs/heads/main/assets/exam-info.json");
+		const exams = await response.json();
 
 		if (!response.ok) {
 			throw new Error(`Failed To Fetch Exam Dates : ${response.status}`);
 		}
 
-		const exams = await response.json();
+		if (!Array.isArray(exams)) {
+			throw new Error("Invalid Data Format : 'Exams' Not An Array");
+		}
+
 		const countdowns = {
 			jee: { date: new Date(2026, 0, 29).toISOString(), isActive: true },
 			neet: { date: new Date(2026, 4, 4).toISOString(), isActive: true },
 			jeeAdv: { date: new Date(2026, 4, 18).toISOString(), isActive: true },
 		};
 
+		function parseDateString(dateString) {
+			const [day, month, year] = dateString.split("-").map(Number);
+			return new Date(year, month - 1, day);
+		}
+
 		exams.forEach((exam) => {
 			const parsedDate = parseDateString(exam.date);
+
 			if (parsedDate instanceof Date && !isNaN(parsedDate)) {
 				if (exam.name === "jee") {
 					countdowns.jee.date = parsedDate.toISOString();
@@ -35,6 +45,7 @@ async function fetchExamDates() {
 		});
 
 		await browser.storage.sync.set({
+			exams,
 			countdowns,
 			showJEE: true,
 			showNEET: true,
