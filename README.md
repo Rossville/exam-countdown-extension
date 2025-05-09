@@ -1,6 +1,14 @@
 This extension provides countdown timers for the JEE and NEET exams, allowing users to track the time remaining until each exam. Users can customize their preferences to show or hide countdowns based on their interests.
 
-## Installation
+## Installation ( Stable )
+
+<p align="center">
+    <a href="https://github.com/NovatraX/exam-countdown-extension/releases/"><img src="https://img.shields.io/badge/GitHub-blue?style=for-the-badge&logo=github&logoColor=white&labelColor=grey&color=blue" alt="Download from GitHub" height="47" /></a>
+    <a href="https://chromewebstore.google.com/detail/mhjcpnnmmalddidegkfcempomlpkkdan"><img src="https://github.com/user-attachments/assets/20a6e44b-fd46-4e6c-8ea6-aad436035753" alt="Download from Chrome Web Store" height="48" /></a>
+    <a href="https://addons.mozilla.org/en-US/firefox/addon/exam-countdown/"><img src="https://github.com/user-attachments/assets/c0e99e6b-97cf-4af2-9737-099db7d3538b" alt="Download from Mozilla Add-ons" height="48" /></a>
+</p>
+
+## Installation ( BETA )
 
 1. **Download** the `.zip` from [Releases](https://github.com/NovatraX/jee-neet-extension/releases/).
 2. **Extract** it to a folder.
