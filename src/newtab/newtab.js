@@ -877,8 +877,6 @@ async function refetchData() {
 	}
 }
 
-document.getElementById("refetch-data-btn").addEventListener("click", refetchData);
-
 function initializePage() {
 	updateDateTime();
 	setDefaultExam();
@@ -900,7 +898,11 @@ function initializePage() {
 	}, 5 * 60 * 1000);
 }
 
-document.addEventListener("DOMContentLoaded", initializePage);
+document.addEventListener("DOMContentLoaded", () => {
+	initializePage();
+	const refetchBtn = document.getElementById("refetch-data-btn").addEventListener("click", refetchData);
+
+});
 
 function updatePauseButtonIcon() {
 	const pauseButton = document.getElementById("pause-wallpaper");
