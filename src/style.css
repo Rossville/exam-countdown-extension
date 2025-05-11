@@ -5,6 +5,12 @@
 	exclude: rootscrollgutter;
 }
 
+@layer utilities {
+	.bglass {
+		@apply rounded-xl bg-black/25 backdrop-blur-sm py-3 min-w-[96px] items-center justify-center gap-1 px-3;
+	}
+}
+
 :root {
 	--bg-brightness: 0.4;
 }
