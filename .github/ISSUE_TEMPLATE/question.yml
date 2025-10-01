@@ -1,0 +1,34 @@
+name: Question
+description: Ask a question about the Exam Countdown Extension
+title: "[Question]: "
+labels: ["question"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about the Exam Countdown Extension? We're here to help! Please check the README and existing issues first.
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: Please provide a clear and detailed question.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Provide any additional context or details that might help us answer your question.
+      placeholder: Screenshots, error messages, or steps you've already tried.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please check the following before submitting.
+      options:
+        - label: I have checked the README for answers.
+          required: true
+        - label: I have searched for similar questions in existing issues.
+          required: true
