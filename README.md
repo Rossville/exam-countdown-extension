@@ -21,7 +21,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [Code of Conduct](#code-of-conduct)
 - [Local Development](#local-development)
 - [License](#license)
 
@@ -63,10 +62,6 @@
 ## 🤝 Contributing
 
 We welcome contributions from everyone! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
-
-## 📜 Code of Conduct
-
-This project adheres to a code of conduct to ensure a welcoming environment for all contributors. Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
 
 ## 🛠️ Local Development
 
