@@ -4,16 +4,11 @@ Thank you for your interest in contributing to the Exam Countdown Extension! We 
 
 ## 📋 Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
 - [How to Contribute](#how-to-contribute)
 - [Development Setup](#development-setup)
 - [Submitting Changes](#submitting-changes)
 - [Reporting Issues](#reporting-issues)
 - [Style Guidelines](#style-guidelines)
-
-## 📜 Code of Conduct
-
-This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [your-email@example.com](mailto:your-email@example.com).
 
 ## 🤝 How to Contribute
 
