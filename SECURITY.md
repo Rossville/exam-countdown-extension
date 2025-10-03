@@ -18,7 +18,7 @@ We take the security of the Exam Countdown Extension seriously. If you discover 
 ### How to Report
 
 1. **Do NOT** open a public GitHub issue for security vulnerabilities
-2. Send an email to [your-email@example.com] with:
+2. Send an email to [support@novatra.in] with:
    - A description of the vulnerability
    - Steps to reproduce the issue
    - Potential impact assessment
