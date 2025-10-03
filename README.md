@@ -13,6 +13,7 @@
   <a href="https://github.com/NovatraX/exam-countdown-extension/blob/main/LICENSE"><img src="https://img.shields.io/github/license/NovatraX/exam-countdown-extension?style=flat-square" alt="License"></a>
   <a href="https://github.com/NovatraX/exam-countdown-extension/issues"><img src="https://img.shields.io/github/issues/NovatraX/exam-countdown-extension?style=flat-square" alt="Issues"></a>
   <a href="https://github.com/NovatraX/exam-countdown-extension/pulls"><img src="https://img.shields.io/github/issues-pr/NovatraX/exam-countdown-extension?style=flat-square" alt="Pull Requests"></a>
+  <a href="https://novatra.in/extension/"><img src="https://img.shields.io/badge/Homepage-novatra.in-blue?style=flat-square" alt="Homepage"></a>
 </p>
 
 ## 📋 Table of Contents
