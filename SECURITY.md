@@ -48,7 +48,7 @@ Please provide as much information as possible:
 
 When using this extension:
 
-1. **Download from Official Sources**: Only install from Chrome Web Store or official repository releases
+1. **Download from Official Sources**: Only install from Chrome Web Store, Mozilla AMO or official repository releases
 2. **Keep Updated**: Enable automatic updates or regularly check for new versions
 3. **Review Permissions**: Check what permissions the extension requests
 4. **Report Suspicious Behavior**: Contact us if you notice unusual activity
@@ -85,7 +85,7 @@ Security patches will be released as:
 - Minor version updates (e.g., 1.x.0) for moderate issues
 - Major version updates (e.g., x.0.0) for significant changes
 
-Check the [CHANGELOG](CHANGELOG.md) for security-related updates.
+<!--Check the [CHANGELOG](CHANGELOG.md) for security-related updates.-->
 
 ## Contact
 
