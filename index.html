@@ -5,8 +5,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="theme-color" content="#e5e7eb" />
 		<title>Exam Countdown - New Tab</title>
-		<link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
-		<script src="https://cdn.tailwindcss.com"></script>
+		<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+		<link href="https://cdn.jsdelivr.net/combine/npm/daisyui@5/theme/winter.css,npm/daisyui@5/theme/sunset.css" rel="stylesheet" type="text/css" />
+		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 		<script>
 			tailwind.config = {
@@ -18,6 +19,23 @@
 					},
 				},
 			};
+		</script>
+		<script>
+			function updateThemeIcon(theme) {
+				const icon = document.querySelector(".theme-icon");
+				const path = icon.querySelector("path");
+				if (!path) return;
+				const moonPath = "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z";
+				const sunPath =
+					"M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.59-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.59-1.591zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z";
+				if (theme === "winter") {
+					icon.setAttribute("fill", "none");
+					path.setAttribute("d", moonPath);
+				} else {
+					icon.setAttribute("fill", "currentColor");
+					path.setAttribute("d", sunPath);
+				}
+			}
 		</script>
 		<script>
 			(() => {
@@ -36,18 +54,46 @@
 		</script>
 	</head>
 	<body class="font-sans bg-base-100">
-		<nav class="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+		<nav class="navbar bg-base-100 shadow-sm sticky top-0 z-50 border-b border-base-200">
 			<div class="navbar-start">
-				<a href="#" class="btn btn-ghost normal-case text-xl">Exam Countdown</a>
+				<a href="#" class="btn btn-ghost normal-case text-xl font-bold">Exam Countdown</a>
 			</div>
+			
+			<!-- Desktop Navigation -->
+			<div class="navbar-center hidden lg:flex">
+				<ul class="menu menu-horizontal px-1 gap-2">
+					<li><a href="#features" class="btn btn-ghost btn-sm">Features</a></li>
+					<li><a href="#gallery" class="btn btn-ghost btn-sm">Gallery</a></li>
+					<li><a href="#testimonials" class="btn btn-ghost btn-sm">Testimonials</a></li>
+					<li><a href="#faq" class="btn btn-ghost btn-sm">FAQ</a></li>
+				</ul>
+			</div>
+			
 			<div class="navbar-end">
-				<button data-toggle-theme="winter,sunset" class="btn btn-ghost btn-circle" aria-label="Toggle theme">
+				<!-- Theme Toggle -->
+				<button data-toggle-theme="winter,sunset" class="btn btn-ghost btn-circle mr-2" aria-label="Toggle theme">
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
 						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 					</svg>
 				</button>
+				
+				<!-- Mobile Menu Button -->
+				<div class="dropdown dropdown-end lg:hidden">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Open menu">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+						</svg>
+					</div>
+					<ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 border border-base-200">
+						<li><a href="#features" class="text-base">Features</a></li>
+						<li><a href="#gallery" class="text-base">Gallery</a></li>
+						<li><a href="#testimonials" class="text-base">Testimonials</a></li>
+						<li><a href="#faq" class="text-base">FAQ</a></li>
+					</ul>
+				</div>
 			</div>
 		</nav>
+
 		<!-- HERO SECTION -->
 		<div class="max-w-6xl w-full px-4 mx-auto">
 			<h2 class="text-3xl sm:text-4xl font-bold my-8 sm:my-10 text-center">Stay Exam-Ready With New Tab Built For Focus</h2>
@@ -119,7 +165,7 @@
 										</div>
 										<div class="rounded-xl bg-base-100 p-3">
 											<p class="text-sm text-base-content/70">Quote for today</p>
-											<p class="mt-1 text-base font-semibold text-base-content">“Discipline is choosing between what you want now and what you want most.”</p>
+											<p class="mt-1 text-base font-semibold text-base-content">"Discipline is choosing between what you want now and what you want most."</p>
 										</div>
 									</div>
 								</div>
@@ -131,7 +177,7 @@
 		</div>
 
 		<!-- FEATURE HIGHLIGHTS -->
-		<div class="max-w-6xl w-full px-4 mx-auto">
+		<div id="features" class="max-w-6xl w-full px-4 mx-auto scroll-mt-20">
 			<h2 class="text-2xl sm:text-3xl font-bold my-6 sm:my-10 text-center">Everything To Keep You On Track</h2>
 
 			<div class="flex justify-center items-center mb-12">
@@ -192,71 +238,52 @@
 		</div>
 
 		<!-- GALLERY SECTION -->
-		<div class="max-w-6xl w-full px-4 mx-auto">
+		<div id="gallery" class="max-w-6xl w-full px-4 mx-auto scroll-mt-20">
 			<h2 class="text-2xl sm:text-3xl font-bold my-6 sm:my-10 text-center">See Your Tab In Action</h2>
 			<div class="card bg-base-100 mb-6 shadow dark:shadow-lg border border-base-300">
 				<div class="card-body">
 					<div class="relative mt-6">
 						<div data-slider-container tabindex="0" class="overflow-hidden rounded-3xl border border-base-300 bg-base-100 shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/60 aspect-[4/3] sm:aspect-[16/10]">
-							<div class="flex transition-transform duration-500 ease-out" data-slider>
-								<div class="w-full flex-shrink-0" data-slide aria-hidden="false">
-									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-1.png" alt="Customizable countdown widgets" class="h-full w-full object-contain max-h-[65vh]" loading="lazy" decoding="async" data-prefetch="true" />
+							<div data-slider class="flex transition-transform duration-300 ease-in-out h-full" data-active-index="0">
+								<div data-slide class="w-full flex-shrink-0 relative" aria-hidden="false">
+									<img src="https://raw.githubusercontent.com/NovatraX/exam-countdown-extension/main/assets/screenshots/screenshot1.png" alt="Exam Countdown Extension Screenshot 1" class="w-full h-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
 								</div>
-								<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
-									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-2.png" alt="Focus music player" class="h-full w-full object-contain max-h-[65vh]" loading="lazy" decoding="async" data-prefetch="true" />
+								<div data-slide class="w-full flex-shrink-0 relative" aria-hidden="true">
+									<img src="https://raw.githubusercontent.com/NovatraX/exam-countdown-extension/main/assets/screenshots/screenshot2.png" alt="Exam Countdown Extension Screenshot 2" class="w-full h-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
 								</div>
-								<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
-									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-3.png" alt="Motivational quotes widget" class="h-full w-full object-contain max-h-[65vh]" loading="lazy" decoding="async" data-prefetch="true" />
-								</div>
-								<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
-									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-4.png" alt="Custom wallpaper options" class="h-full w-full object-contain max-h-[65vh]" loading="lazy" decoding="async" data-prefetch="true" />
+								<div data-slide class="w-full flex-shrink-0 relative" aria-hidden="true">
+									<img src="https://raw.githubusercontent.com/NovatraX/exam-countdown-extension/main/assets/screenshots/screenshot3.png" alt="Exam Countdown Extension Screenshot 3" class="w-full h-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
 								</div>
 							</div>
-							<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2" data-slider-dots aria-label="Select screenshot" role="tablist"></div>
-						</div>
 
-						<!-- Desktop controls (md and up) -->
-						<button data-slider-prev class="absolute left-[-4rem] top-1/2 -translate-y-1/2 btn btn-square btn-primary border border-base-300 text-base-content/70 hover:text-primary hover:bg-primary-200/80 z-10 hidden md:flex items-center justify-center" aria-label="Previous screenshot">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<polyline points="15 18 9 12 15 6"></polyline>
-							</svg>
-						</button>
-
-						<button data-slider-next class="absolute right-[-4rem] top-1/2 -translate-y-1/2 btn btn-square btn-primary border border-base-300 text-base-content/70 hover:text-primary hover:bg-primary-200/80 z-10 hidden md:flex items-center justify-center" aria-label="Next screenshot">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<polyline points="9 18 15 12 9 6"></polyline>
-							</svg>
-						</button>
-
-						<!-- Mobile controls (visible on small screens) -->
-						<div class="absolute inset-x-0 bottom-4 flex items-center justify-between px-4 md:hidden z-20">
-							<button data-slider-prev class="btn btn-ghost btn-circle bg-base-100/60 border border-base-200 p-2 h-10 w-10 flex items-center justify-center shadow-sm" aria-label="Previous screenshot (mobile)">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-base-content">
-									<polyline points="15 18 9 12 15 6"></polyline>
+							<!-- Navigation Buttons -->
+							<button data-slider-prev class="absolute left-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 border-base-300 hover:bg-base-100" aria-label="Previous screenshot">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 								</svg>
 							</button>
-
-							<div class="flex gap-2" aria-hidden="true"></div>
-
-							<button data-slider-next class="btn btn-ghost btn-circle bg-base-100/60 border border-base-200 p-2 h-10 w-10 flex items-center justify-center shadow-sm" aria-label="Next screenshot (mobile)">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-base-content">
-									<polyline points="9 18 15 12 9 6"></polyline>
+							<button data-slider-next class="absolute right-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 border-base-300 hover:bg-base-100" aria-label="Next screenshot">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
 								</svg>
 							</button>
 						</div>
+
+						<!-- Dots Navigation -->
+						<div class="flex justify-center mt-4 gap-2" data-slider-dots role="tablist" aria-label="Screenshot navigation"></div>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- TESTIMONIALS -->
-		<div class="max-w-6xl w-full px-4 mx-auto">
+		<div id="testimonials" class="max-w-6xl w-full px-4 mx-auto scroll-mt-20">
 			<h2 class="text-2xl sm:text-3xl font-bold my-6 sm:my-10 text-center">Loved By Students</h2>
 
 			<div class="flex justify-center items-center mb-12">
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
 					<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-						<p class="text-base text-base-content/80">“Great for aspirants”</p>
+						<p class="text-base text-base-content/80">"Great for aspirants"</p>
 						<div class="mt-4 sm:mt-6 flex items-center gap-3">
 							<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Vikram%20Hegde" alt="Avatar for Vikram Hegde" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 							<div>
@@ -267,7 +294,7 @@
 					</article>
 
 					<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-						<p class="text-base text-base-content/80">“Great extension for students, looks cool and FREE?! Love the work!”</p>
+						<p class="text-base text-base-content/80">"Great extension for students, looks cool and FREE?! Love the work!"</p>
 						<div class="mt-4 sm:mt-6 flex items-center gap-3">
 							<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Divya%20Singh" alt="Avatar for Divya Singh" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 							<div>
@@ -278,7 +305,7 @@
 					</article>
 
 					<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-						<p class="text-base text-base-content/80">“working great without any glitches so far and the selection of background is great.”</p>
+						<p class="text-base text-base-content/80">"working great without any glitches so far and the selection of background is great."</p>
 						<div class="mt-4 sm:mt-6 flex items-center gap-3">
 							<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Carnage" alt="Avatar for Carnage" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 							<div>
@@ -289,7 +316,7 @@
 					</article>
 
 					<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-						<p class="text-base text-base-content/80">“This extension has transformed my study routine. Highly recommend!”</p>
+						<p class="text-base text-base-content/80">"This extension has transformed my study routine. Highly recommend!"</p>
 						<div class="mt-4 sm:mt-6 flex items-center gap-3">
 							<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Soham" alt="Avatar for Soham" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 							<div>
@@ -303,7 +330,7 @@
 		</div>
 
 		<!-- FAQ -->
-		<div class="max-w-6xl w-full px-4 mx-auto">
+		<div id="faq" class="max-w-6xl w-full px-4 mx-auto scroll-mt-20">
 			<h2 class="text-2xl sm:text-3xl font-bold my-6 sm:my-10 text-center">Questions Students Ask</h2>
 
 			<div class="card bg-base-100 mb-6 shadow dark:shadow-lg border border-base-300">
@@ -460,6 +487,12 @@
 
 						event.preventDefault();
 						targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+						
+						// Close mobile dropdown if open
+						const dropdown = document.querySelector('.dropdown-content');
+						if (dropdown) {
+							dropdown.blur();
+						}
 					});
 				});
 			}
@@ -552,16 +585,20 @@
 				}
 
 				// Bind both desktop and mobile control buttons (they share data attributes)
-				prevButton?.addEventListener("click", () => {
-					stopAutoSlide();
-					goToSlide(currentIndex - 1);
-					startAutoSlide();
+				prevButtons.forEach(button => {
+					button.addEventListener("click", () => {
+						stopAutoSlide();
+						goToSlide(currentIndex - 1);
+						startAutoSlide();
+					});
 				});
 
-				nextButton?.addEventListener("click", () => {
-					stopAutoSlide();
-					goToSlide(currentIndex + 1);
-					startAutoSlide();
+				nextButtons.forEach(button => {
+					button.addEventListener("click", () => {
+						stopAutoSlide();
+						goToSlide(currentIndex + 1);
+						startAutoSlide();
+					});
 				});
 
 				container.addEventListener("mouseenter", stopAutoSlide);
@@ -599,123 +636,72 @@
 					}
 					const delta = event.clientX - startX;
 					if (Math.abs(delta) > 50) {
-						isDragging = false;
-						try {
-							container.releasePointerCapture(event.pointerId);
-						} catch (e) {}
 						if (delta > 0) {
 							goToSlide(currentIndex - 1);
 						} else {
 							goToSlide(currentIndex + 1);
 						}
+						isDragging = false;
+						startAutoSlide();
 					}
 				});
 
-				container.addEventListener("pointerup", (event) => {
-					if (isDragging) {
-						try {
-							container.releasePointerCapture(event.pointerId);
-						} catch (e) {}
-					}
+				container.addEventListener("pointerup", () => {
 					isDragging = false;
 					startAutoSlide();
 				});
 
-				container.addEventListener("pointercancel", () => {
-					isDragging = false;
-					startAutoSlide();
-				});
-
+				// Initialize
 				goToSlide(0);
 				startAutoSlide();
 			}
 
 			function detectBrowser() {
 				const userAgent = navigator.userAgent;
-				let browserName = "Chrome";
-
-				if (userAgent.match(/firefox|fxios/i)) {
-					browserName = "Firefox";
-				} else if (userAgent.match(/edg/i)) {
-					browserName = "Edge";
-				} else if (userAgent.match(/opr\//i)) {
-					browserName = "Opera";
-				} else if (userAgent.match(/safari/i) && !userAgent.match(/chrome/i)) {
-					browserName = "Safari";
+				if (userAgent.includes("Firefox")) {
+					return { name: "Firefox", isFirefox: true };
+				} else if (userAgent.includes("Chrome") || userAgent.includes("Chromium") || userAgent.includes("Edge")) {
+					return { name: "Chrome", isChrome: true };
 				}
-
-				return { name: browserName };
+				return { name: "Unknown", isUnknown: true };
 			}
 
 			function updateDownloadButtons(browserInfo) {
-				const browserIcons = {
-					Chrome: `<span class="inline-flex items-center justify-center w-10 h-10 mr-2" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M64 320C64 273.4 76.5 229.6 98.3 191.1L208.1 382.3C230 421.5 271.9 448 320 448C334.3 448 347.1 445.7 360.8 441.4L284.5 573.6C159.9 556.3 64 449.3 64 320zM429.1 385.6C441.4 366.4 448 343.1 448 320C448 281.8 431.2 247.5 404.7 224L557.4 224C569.4 253.6 576 286.1 576 320C576 461.4 461.4 575.1 320 576L429.1 385.6zM541.8 192L320 192C257.1 192 206.3 236.1 194.5 294.7L118.2 162.5C165 102.5 238 64 320 64C414.8 64 497.5 115.5 541.8 192zM408 320C408 368.6 368.6 408 320 408C271.4 408 232 368.6 232 320C232 271.4 271.4 232 320 232C368.6 232 408 271.4 408 320z"/></svg></span>`,
-					Firefox: `<span class="inline-flex items-center justify-center w-10 h-10 mr-2" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M194.2 191.5L194.2 191.5zM545.6 236.9C535 211.4 513.5 183.9 496.7 175.2C510.4 202.1 518.4 229.1 521.4 249.2C521.4 249.3 521.4 249.5 521.5 249.6C493.9 180.8 447.1 153.1 408.9 92.8C393.9 69.1 398 67.6 395.8 68.1L395.7 68.2C349 94.2 320.4 146.6 313.1 190.9C296.5 191.8 280.2 195.9 265.2 203C263.8 203.6 262.7 204.7 262.1 206C261.5 207.3 261.2 208.8 261.5 210.3C261.7 211.1 262.1 211.9 262.6 212.6C263.1 213.3 263.8 213.9 264.5 214.3C265.2 214.7 266.1 215 266.9 215.1C267.7 215.2 268.6 215.1 269.4 214.8L269.9 214.6C285.4 207.3 302.3 203.4 319.4 203.3C382.2 202.7 416.6 247.3 427 265.6C414 256.4 390.6 247.4 368.2 251.3C455.9 295.2 432.4 445.8 310.8 440.5C251.3 437.9 213.7 389.5 210.3 349.7C210.3 349.7 221.5 307.8 290.9 307.8C298.4 307.8 319.8 286.9 320.2 280.8C320.1 278.8 277.7 261.9 261.1 245.6C252.3 236.9 248 232.7 244.3 229.5C242.3 227.8 240.2 226.2 238 224.7C232.4 205.2 232.2 184.7 237.3 165.1C212.2 176.5 192.7 194.5 178.6 210.5L178.5 210.5C168.8 198.3 169.5 157.9 170.1 149.4C170 148.9 162.9 153.1 161.9 153.7C153.3 159.8 145.4 166.6 138.1 174.1C121.8 190.7 94 224.3 82.6 275.3C78.1 295.7 75.8 319.7 75.8 327.6C75.8 462.3 185 571.5 319.7 571.5C440.3 571.5 542.7 484.3 560.1 368.9C571.7 292.2 545.4 237.8 545.4 236.9z"/></svg></span>`,
-					Edge: `<span class="inline-flex items-center justify-center w-10 h-10 mr-2" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M184.1 101.4C225.1 76.2 271.7 63.2 319 64C487 64 576 187.8 576 283.5C575.9 316.2 563 347.4 540.1 370.7C517.2 393.9 486.1 407.2 453.4 407.7C378.2 407.7 361.9 384.6 361.9 375.7C361.9 371.9 363.1 369.5 366.7 366.3L367.7 365.1L368.1 363.5C378.6 352 384 337.3 384 321.9C384 243.2 301.8 179.2 200 179.2C162.5 178.9 125.5 188.1 92.5 206.1C119.5 148.6 175.2 108.5 183.8 102.3C184.6 101.7 184.1 101.5 184.1 101.5zM199.7 419.5C198.3 449.5 204.3 479.5 216.1 506.7C229.7 533.1 248.8 557.7 272.6 576C213.1 564.5 161.1 532.1 123.2 486.7C85.1 440.3 64 382.4 64 321.9C64 270.7 126.4 227.5 200 227.5C236.6 226.9 272.4 238.4 301.8 260.2L298.2 261.4C246.7 279 199.7 352.1 199.7 419.5zM533.8 464L533.1 464.1C521.3 482.9 507.2 499.2 490.9 513.6C460.1 541.6 422.8 559.1 382.1 563.5C363.5 563.8 345.3 560.3 328.3 552.1C302.7 541.8 281.2 522.1 266.7 499.1C252.3 475.2 245.6 447.4 247.7 419.5C247.1 399.4 253.1 379.2 262.7 361.3C276.6 394.4 300.2 422.6 330.3 442.1C360.4 461.6 395.8 471.6 431.7 470.7C462.7 471 493.8 464 521.9 450.2L523.8 449.3C527.7 447 531.5 445.4 535.4 449.3C539.9 454.2 537.2 458.5 534.2 463.3C534 463.5 533.9 463.8 533.8 464z"/></svg></span>`,
-					Opera: `<span class="inline-flex items-center justify-center w-10 h-10 mr-2" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M385.9 96.7C215.7 96.7 133.3 320.5 238.4 451.8C274.9 497.2 327 527.4 385.9 527.4C422.2 527.4 456.2 516.3 485.3 497C441.5 536.2 383.4 560 320 560C316.1 560 312 560 308.1 559.7C176.6 553.6 72 445.1 72 312C72 175 183 64 320 64L320.8 64C383.9 64.3 441.5 88.1 485.2 127.1C456.2 107.7 422.1 96.7 385.9 96.7zM487.7 494.4C446.8 519.1 397 518 355.7 488.6C411.9 468.1 453.4 397 453.4 312C453.4 227.3 412.2 156.2 356 135.4C397.8 106.2 447.2 105.1 488.9 130.4C594.8 229.1 594.4 396.1 487.7 494.4z"/></svg></span>`,
-				};
+				const ctaBtn = document.getElementById("cta-download-btn");
+				if (!ctaBtn) return;
 
-				const urls = {
-					Chrome: "https://chromewebstore.google.com/detail/mhjcpnnmmalddidegkfcempomlpkkdan",
-					Edge: "https://chromewebstore.google.com/detail/mhjcpnnmmalddidegkfcempomlpkkdan",
-					Firefox: "https://addons.mozilla.org/en-US/firefox/addon/exam-countdown/",
-					Opera: "https://chromewebstore.google.com/detail/mhjcpnnmmalddidegkfcempomlpkkdan",
-					Safari: null,
-				};
-				const url = urls[browserInfo.name];
-				const downloadButtons = document.querySelectorAll("#hero-download-btn, #cta-download-btn, #cta-download-btn-secondary");
-				downloadButtons.forEach((button) => {
-					button.classList.add("inline-flex", "items-center");
-					const iconHtml = browserIcons[browserInfo.name] || browserIcons.Chrome;
-
-					const label = browserInfo.name ? `Download for ${browserInfo.name}` : "Download";
-					button.innerHTML = `${iconHtml}<span>${label}</span>`;
-
-					if (url) {
-						button.onclick = () => window.open(url, "_blank");
-					} else {
-						button.onclick = () => alert("Extension not available for this browser yet.");
-					}
-				});
+				if (browserInfo.isFirefox) {
+					ctaBtn.addEventListener("click", () => {
+						window.open("https://addons.mozilla.org/en-US/firefox/addon/exam-countdown/", "_blank");
+					});
+				} else {
+					ctaBtn.addEventListener("click", () => {
+						window.open("https://chromewebstore.google.com/detail/mhjcpnnmmalddidegkfcempomlpkkdan", "_blank");
+					});
+				}
 			}
 
 			function themeToggle() {
-				var toggleEl = document.querySelector("[data-toggle-theme]");
-				(function (theme = localStorage.getItem("theme")) {
-					if (localStorage.getItem("theme")) {
-						document.documentElement.setAttribute("data-theme", theme);
-						if (toggleEl) {
-							[...document.querySelectorAll("[data-toggle-theme]")].forEach((el) => {
-								el.classList.add(toggleEl.getAttribute("data-act-class"));
-							});
-						}
-					}
-				})();
-				if (toggleEl) {
-					[...document.querySelectorAll("[data-toggle-theme]")].forEach((el) => {
-						el.addEventListener("click", function () {
-							var themesList = el.getAttribute("data-toggle-theme");
-							if (themesList) {
-								var themesArray = themesList.split(",");
-								if (document.documentElement.getAttribute("data-theme") == themesArray[0]) {
-									if (themesArray.length == 1) {
-										document.documentElement.removeAttribute("data-theme");
-										localStorage.removeItem("theme");
-									} else {
-										document.documentElement.setAttribute("data-theme", themesArray[1]);
-										localStorage.setItem("theme", themesArray[1]);
-									}
-								} else {
-									document.documentElement.setAttribute("data-theme", themesArray[0]);
-									localStorage.setItem("theme", themesArray[0]);
-								}
+				[...document.querySelectorAll("[data-toggle-theme]")].forEach((el) => {
+					el.addEventListener("click", function () {
+						var themesArray = this.getAttribute("data-toggle-theme").split(",");
+						if (document.documentElement.getAttribute("data-theme") == themesArray[0]) {
+							if (themesArray.length == 1) {
+								document.documentElement.removeAttribute("data-theme");
+								localStorage.removeItem("theme");
+							} else {
+								document.documentElement.setAttribute("data-theme", themesArray[1]);
+								localStorage.setItem("theme", themesArray[1]);
 							}
-							[...document.querySelectorAll("[data-toggle-theme]")].forEach((el) => {
-								el.classList.toggle(this.getAttribute("data-act-class"));
-							});
-						});
+						} else {
+							document.documentElement.setAttribute("data-theme", themesArray[0]);
+							localStorage.setItem("theme", themesArray[0]);
+						}
 					});
-				}
+					[...document.querySelectorAll("[data-toggle-theme]")].forEach((el) => {
+						el.classList.toggle(this.getAttribute("data-act-class"));
+					});
+				});
 			}
 			function themeBtn() {
 				(function (theme = localStorage.getItem("theme")) {
