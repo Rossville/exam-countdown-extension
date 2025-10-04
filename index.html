@@ -55,20 +55,47 @@
 		</script>
 	</head>
 	<body class="font-sans bg-base-100">
-		<nav class="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+		<nav class="navbar bg-base-100 shadow-sm sticky top-0 z-50 border-b border-base-200">
 			<div class="navbar-start">
-				<a href="#" class="btn btn-ghost normal-case text-xl">Exam Countdown</a>
+				<a href="#" class="btn btn-ghost normal-case text-xl font-bold">Exam Countdown</a>
 			</div>
+
+			<!-- Desktop Navigation -->
+			<div class="navbar-center hidden lg:flex">
+				<ul class="menu menu-horizontal px-1 gap-2">
+					<li><a href="#features" class="btn btn-ghost btn-sm">Features</a></li>
+					<li><a href="#gallery" class="btn btn-ghost btn-sm">Gallery</a></li>
+					<li><a href="#testimonials" class="btn btn-ghost btn-sm">Testimonials</a></li>
+					<li><a href="#faq" class="btn btn-ghost btn-sm">FAQ</a></li>
+				</ul>
+			</div>
+
 			<div class="navbar-end">
-				<button data-toggle-theme="winter,sunset" class="btn btn-ghost btn-circle" aria-label="Toggle theme">
+				<!-- Theme Toggle -->
+				<button data-toggle-theme="winter,sunset" class="btn btn-ghost btn-circle mr-2" aria-label="Toggle theme">
 					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
 						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 					</svg>
 				</button>
+
+				<!-- Mobile Menu Button -->
+				<div class="dropdown dropdown-end lg:hidden">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle" aria-label="Open menu">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+						</svg>
+					</div>
+					<ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 border border-base-200">
+						<li><a href="#features" class="text-base">Features</a></li>
+						<li><a href="#gallery" class="text-base">Gallery</a></li>
+						<li><a href="#testimonials" class="text-base">Testimonials</a></li>
+						<li><a href="#faq" class="text-base">FAQ</a></li>
+					</ul>
+				</div>
 			</div>
 		</nav>
 		<!-- Hero Section -->
-		<section class="py-12 sm:py-16 md:py-20">
+		<section class="py-12 sm:py-16 md:py-20 scroll-mt-20">
 			<div class="max-w-6xl mx-auto px-4">
 				<div class="flex flex-col items-center gap-8 lg:flex-row lg:gap-12">
 					<!-- Left Content -->
@@ -144,7 +171,7 @@
 			</div>
 		</div>
 		<!-- FEATURE HIGHLIGHTS -->
-		<section class="py-12 sm:py-16 md:py-20">
+		<section id="features" class="py-12 sm:py-16 md:py-20 scroll-mt-20">
 			<div class="max-w-6xl mx-auto px-4">
 				<h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12">Everything To Keep You On Track</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -196,52 +223,53 @@
 			</div>
 		</section>
 		<!-- GALLERY SECTION -->
-
-		<div class="w-full">
-			<h2 class="text-2xl sm:text-3xl font-bold my-6 sm:my-10 text-center px-4">See Your Tab In Action</h2>
-			<div class="w-full px-2 sm:px-4 md:max-w-6xl md:mx-auto">
-				<div class="relative">
-					<div data-slider-container tabindex="0" class="overflow-hidden rounded-2xl sm:rounded-3xl border border-base-300 bg-base-100 shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/60 w-full">
-						<div class="flex transition-transform duration-500 ease-out aspect-[16/9] sm:aspect-[4/3] md:aspect-[16/10]" data-slider>
-							<div class="w-full flex-shrink-0" data-slide aria-hidden="false">
-								<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-1.png" alt="Customizable countdown widgets" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
+		<section id="gallery" class="scroll-mt-20">
+			<div class="w-full">
+				<h2 class="text-2xl sm:text-3xl font-bold my-6 sm:my-10 text-center px-4">See Your Tab In Action</h2>
+				<div class="w-full px-2 sm:px-4 md:max-w-6xl md:mx-auto">
+					<div class="relative">
+						<div data-slider-container tabindex="0" class="overflow-hidden rounded-2xl sm:rounded-3xl border border-base-300 bg-base-100 shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/60 w-full">
+							<div class="flex transition-transform duration-500 ease-out aspect-[16/9] sm:aspect-[4/3] md:aspect-[16/10]" data-slider>
+								<div class="w-full flex-shrink-0" data-slide aria-hidden="false">
+									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-1.png" alt="Customizable countdown widgets" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
+								</div>
+								<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
+									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-2.png" alt="Focus music player" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
+								</div>
+								<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
+									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-3.png" alt="Motivational quotes widget" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
+								</div>
+								<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
+									<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-4.png" alt="Custom wallpaper options" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
+								</div>
 							</div>
-							<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
-								<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-2.png" alt="Focus music player" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
-							</div>
-							<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
-								<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-3.png" alt="Motivational quotes widget" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
-							</div>
-							<div class="w-full flex-shrink-0" data-slide aria-hidden="true">
-								<img src="https://raw.githubusercontent.com/SpreadSheets600/exam-countdown-extension/c2b64e86421ca0509dfa312a6a1397d4862d74bc/assets/screenshots/image-4.png" alt="Custom wallpaper options" class="h-full w-full object-cover" loading="lazy" decoding="async" data-prefetch="true" />
-							</div>
+							<!-- Dots indicator -->
+							<div class="absolute bg-base-100 p-2 rounded-lg bottom-3 sm:bottom-4 left-1/2 flex -translate-x-1/2 gap-2 z-30" data-slider-dots aria-label="Select screenshot" role="tablist"></div>
 						</div>
-						<!-- Dots indicator -->
-						<div class="absolute bg-base-100 p-2 rounded-lg bottom-3 sm:bottom-4 left-1/2 flex -translate-x-1/2 gap-2 z-30" data-slider-dots aria-label="Select screenshot" role="tablist"></div>
+						<!-- Desktop Controls -->
+						<button data-slider-prev class="absolute right-2 sm:right-4 md:-right-16 top-1/2 -translate-y-1/2 btn btn-circle btn-sm sm:btn-md bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-100 z-20" style="left: 10px" aria-label="Previous screenshot" onclick="window.galleryStopAutoSlide(); window.galleryGoToSlide((window.galleryCurrentIndex() - 1 + window.gallerySlidesLength) % window.gallerySlidesLength); window.galleryStartAutoSlide();">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="15 18 9 12 15 6"></polyline>
+							</svg>
+						</button>
+						<button data-slider-next class="absolute top-1/2 -translate-y-1/2 btn btn-circle btn-sm sm:btn-md bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-100 z-20" style="right: 10px" aria-label="Next screenshot" onclick="window.galleryStopAutoSlide(); window.galleryGoToSlide((window.galleryCurrentIndex() + 1) % window.gallerySlidesLength); window.galleryStartAutoSlide();">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="9 18 15 12 9 6"></polyline>
+							</svg>
+						</button>
 					</div>
-					<!-- Desktop Controls -->
-					<button data-slider-prev class="absolute right-2 sm:right-4 md:-right-16 top-1/2 -translate-y-1/2 btn btn-circle btn-sm sm:btn-md bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-100 z-20" style="left: 10px" aria-label="Previous screenshot" onclick="window.galleryStopAutoSlide(); window.galleryGoToSlide((window.galleryCurrentIndex() - 1 + window.gallerySlidesLength) % window.gallerySlidesLength); window.galleryStartAutoSlide();">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<polyline points="15 18 9 12 15 6"></polyline>
-						</svg>
-					</button>
-					<button data-slider-next class="absolute top-1/2 -translate-y-1/2 btn btn-circle btn-sm sm:btn-md bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-100 z-20" style="right: 10px" aria-label="Next screenshot" onclick="window.galleryStopAutoSlide(); window.galleryGoToSlide((window.galleryCurrentIndex() + 1) % window.gallerySlidesLength); window.galleryStartAutoSlide();">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<polyline points="9 18 15 12 9 6"></polyline>
-						</svg>
-					</button>
 				</div>
 			</div>
-		</div>
+		</section>
 
 		<!-- TESTIMONIALS -->
-		<section class="py-12 sm:py-16 md:py-20">
+		<section id="testimonials" class="py-12 sm:py-16 md:py-20 scroll-mt-20">
 			<div class="max-w-6xl mx-auto px-4">
 				<h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12">Loved By Students</h2>
 				<div class="flex justify-center items-center mb-12">
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
 						<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-							<p class="text-base text-base-content/80">“Great for aspirants”</p>
+							<p class="text-base text-base-content/80">"Great for aspirants"</p>
 							<div class="mt-4 sm:mt-6 flex items-center gap-3">
 								<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Vikram%20Hegde" alt="Avatar for Vikram Hegde" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 								<div>
@@ -251,7 +279,7 @@
 							</div>
 						</article>
 						<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-							<p class="text-base text-base-content/80">“Great extension for students, looks cool and FREE?! Love the work!”</p>
+							<p class="text-base text-base-content/80">"Great extension for students, looks cool and FREE?! Love the work!"</p>
 							<div class="mt-4 sm:mt-6 flex items-center gap-3">
 								<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Divya%20Singh" alt="Avatar for Divya Singh" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 								<div>
@@ -261,7 +289,7 @@
 							</div>
 						</article>
 						<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-							<p class="text-base text-base-content/80">“working great without any glitches so far and the selection of background is great.”</p>
+							<p class="text-base text-base-content/80">"working great without any glitches so far and the selection of background is great."</p>
 							<div class="mt-4 sm:mt-6 flex items-center gap-3">
 								<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Carnage" alt="Avatar for Carnage" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 								<div>
@@ -271,7 +299,7 @@
 							</div>
 						</article>
 						<article class="rounded-3xl border border-base-300 bg-base-100 p-4 sm:p-6 shadow-sm">
-							<p class="text-base text-base-content/80">“This extension has transformed my study routine. Highly recommend!”</p>
+							<p class="text-base text-base-content/80">"This extension has transformed my study routine. Highly recommend!"</p>
 							<div class="mt-4 sm:mt-6 flex items-center gap-3">
 								<img loading="lazy" decoding="async" src="https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Soham" alt="Avatar for Soham" class="h-10 w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2" />
 								<div>
@@ -285,7 +313,7 @@
 			</div>
 		</section>
 		<!-- FAQ - Simplified -->
-		<section class="py-12 sm:py-16 bg-base-100">
+		<section id="faq" class="py-12 sm:py-16 bg-base-100 scroll-mt-20">
 			<div class="max-w-3xl mx-auto px-4">
 				<h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12">Questions Students Ask</h2>
 				<div class="space-y-3">
