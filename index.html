@@ -356,6 +356,12 @@
 				</div>
 			</div>
 		</section>
+		<!--Back To Top Button-->
+		<button id="backToTop" class="hidden fixed bottom-6 right-6 z-50 btn btn-circle btn-primary shadow-lg">
+  			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+    			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+  			</svg>
+		</button>
 		<!-- Footer -->
 		<footer class="py-8 sm:py-10 bg-base-100">
 			<div class="max-w-6xl mx-auto px-4">
@@ -593,6 +599,21 @@
 					updateThemeIcon(nextTheme);
 				});
 			}
+			//JS for Back To Top Button
+			const backToTopBtn = document.getElementById("backToTop");
+			window.addEventListener("scroll", () => {
+				if (window.scrollY > 200) {
+					backToTopBtn.classList.remove("hidden");
+				} else {
+					backToTopBtn.classList.add("hidden");
+				}
+			});
+			backToTopBtn.addEventListener("click", () => {
+				window.scrollTo({
+					top: 0,
+					behavior: "smooth"
+				});
+			});
 		</script>
 	</body>
 </html>
