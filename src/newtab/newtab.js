@@ -549,6 +549,7 @@ function setupEventListeners() {
   const toggleCountdown = document.getElementById("toggle-countdown");
   const toggleQuote = document.getElementById("toggle-quote");
   const toggleSeconds = document.getElementById("toggle-seconds");
+  const toggleTodos = document.getElementById("toggle-todos");
   const toggleBrand = document.getElementById("toggle-brand");
 
   const saveMessage = document.getElementById("save-message");
@@ -775,6 +776,7 @@ function setupEventListeners() {
       let showCountdown = toggleCountdown ? toggleCountdown.checked : true;
       let showQuote = toggleQuote ? toggleQuote.checked : true;
       let showSeconds = toggleSeconds ? toggleSeconds.checked : true;
+      let showTodos = toggleTodos ? toggleTodos.checked : true;
       let showBrand = toggleBrand ? toggleBrand.checked : true;
 
       let customName = "";
@@ -814,6 +816,7 @@ function setupEventListeners() {
           countdown: showCountdown,
           quote: showQuote,
           seconds: showSeconds,
+          todos: showTodos,
           brand: showBrand,
         },
         wallpaperIndex: currentWallpaperIndex,
@@ -837,6 +840,7 @@ function setupEventListeners() {
             showCountdown,
             showQuote,
             showSeconds,
+            showTodos,
             showBrand
           );
 
@@ -904,12 +908,14 @@ function updateWidgetVisibility(
   showCountdown,
   showQuote,
   showSeconds,
+  showTodos,
   showBrand
 ) {
   const dateTimeElement = document.getElementById("clock-class");
   const countdownElement = document.getElementById("countdown-class");
   const quoteElement = document.getElementById("quote-class");
   const secondsElement = document.getElementById("seconds-container");
+  const todosElement = document.getElementById("quick-todo-section");
   const brandElement = document.getElementById("brand-class");
 
   if (dateTimeElement) {
@@ -926,6 +932,10 @@ function updateWidgetVisibility(
 
   if (secondsElement) {
     secondsElement.style.display = showSeconds ? "" : "none";
+  }
+
+  if (todosElement) {
+    todosElement.style.display = showTodos ? "" : "none";
   }
 
   if (brandElement) {
@@ -964,6 +974,7 @@ function loadUserPreferences() {
     const toggleCountdown = document.getElementById("toggle-countdown");
     const toggleQuote = document.getElementById("toggle-quote");
     const toggleSeconds = document.getElementById("toggle-seconds");
+    const toggleTodos = document.getElementById("toggle-todos");
     const toggleBrand = document.getElementById("toggle-brand");
 
     if (data.widgetVisibility) {
@@ -974,6 +985,8 @@ function loadUserPreferences() {
         toggleCountdown.checked = data.widgetVisibility.countdown;
       if (toggleQuote) toggleQuote.checked = data.widgetVisibility.quote;
       if (toggleSeconds) toggleSeconds.checked = data.widgetVisibility.seconds;
+      if (toggleTodos)
+        toggleTodos.checked = data.widgetVisibility.todos !== false;
       if (toggleBrand) toggleBrand.checked = data.widgetVisibility.brand;
 
       // Apply visibility settings
@@ -982,8 +995,12 @@ function loadUserPreferences() {
         data.widgetVisibility.countdown,
         data.widgetVisibility.quote,
         data.widgetVisibility.seconds,
+        data.widgetVisibility.todos !== false,
         data.widgetVisibility.brand
       );
+    } else {
+      // Default visibility for new users
+      updateWidgetVisibility(true, true, true, true, true, true);
     }
 
     console.log(currentExam);
