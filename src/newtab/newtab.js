@@ -31,10 +31,15 @@ function saveCustomExamData(name, date) {
   customExamName = name || "Custom Exam";
   customExamDate = date;
 
+  let dateValueToStore = null;
+  if (customExamDate && !isNaN(customExamDate.getTime())) {
+    dateValueToStore = customExamDate.toISOString();
+  }
+
   try {
     browser.storage.sync.set({
       customExamName: customExamName,
-      customExamDate: customExamDate ? customExamDate.getTime() : null,
+      customExamDate: dateValueToStore,
     });
     return true;
   } catch (error) {
@@ -558,6 +563,34 @@ function setupEventListeners() {
   const prevWallpaperBtn = document.getElementById("prev-wallpaper");
   const pauseWallpaperBtn = document.getElementById("pause-wallpaper");
 
+  function formatDateToLocalInputString(date) {
+    if (!date || isNaN(date.getTime())) return "";
+
+    const pad = (num) => num.toString().padStart(2, "0");
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1); // getMonth() is 0-indexed
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  function getCurrentLocalDatetimeString() {
+    const now = new Date();
+
+    const pad = (num) => num.toString().padStart(2, "0");
+
+    const year = now.getFullYear();
+    const month = pad(now.getMonth() + 1); // getMonth() is 0-indexed
+    const day = pad(now.getDate());
+    const hours = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
   const showOptionsModal = function () {
     browser.storage.sync.get().then((data) => {
       const activeExam = data.activeExam || "jeeAdv";
@@ -576,6 +609,8 @@ function setupEventListeners() {
         brightnessSlider.value = 0.4;
       }
       const customExam = getCustomExamData();
+      const minTime = getCurrentLocalDatetimeString();
+      customExamDateInput.min = minTime;
 
       if (customExam.name) {
         customExamNameInput.value = customExam.name;
@@ -584,7 +619,9 @@ function setupEventListeners() {
       }
 
       if (hasValidCustomExam()) {
-        customExamDateInput.value = customExam.date.toISOString().split("T")[0];
+        customExamDateInput.value = formatDateToLocalInputString(
+          customExam.date
+        );
 
         const customExamStat = document.getElementById("custom-exam-stat");
         const customExamStatTitle = document.getElementById(
@@ -599,7 +636,13 @@ function setupEventListeners() {
           customExamStatTitle.textContent = customExam.name;
           customExamStatDate.textContent = customExam.date.toLocaleDateString(
             "en-US",
-            { year: "numeric", month: "long", day: "numeric" }
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+            }
           );
         }
       } else {
