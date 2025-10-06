@@ -35,5 +35,10 @@
   "{{firefox}}.content_security_policy": "script-src 'self'; object-src 'self'",
   "{{chrome}}.content_security_policy": {
       "extension_pages": "script-src 'self'; object-src 'self'"
-    }
+    },
+  "host_permissions": [
+    "https://api.open-meteo.com/*",
+    "https://geocoding-api.open-meteo.com/*",
+    "https://api.bigdatacloud.net/*"
+  ]
 }
