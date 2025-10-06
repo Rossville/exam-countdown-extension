@@ -39,3 +39,51 @@
 	transition: background-color 0.5s ease;
 	background-color: rgba(0, 0, 0, calc(1 - var(--bg-brightness)));
 }
+
+/* Weather Widget Styles */
+#weather-widget {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.weather-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#weather-city {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#weather-icon {
+  width: 40px;
+  height: 40px;
+}
+
+#weather-temp {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+#weather-description {
+  font-size: 12px;
+  opacity: 0.8;
+  text-transform: capitalize;
+}
