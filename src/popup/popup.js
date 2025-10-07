@@ -146,6 +146,27 @@ function openFullCountdown() {
   browser.tabs.create({ url: browser.runtime.getURL("newtab/newtab.html") });
 }
 
+function loadSecondsVisibility() {
+  browser.storage.sync.get(["widgetVisibility"]).then((data) => {
+    const showSeconds = data.widgetVisibility?.seconds !== false;
+    
+    // Hide or show all seconds containers
+    const secondsContainers = [
+      "custom-exam-seconds-container",
+      "jee-seconds-container",
+      "jee-adv-seconds-container",
+      "neet-seconds-container"
+    ];
+    
+    secondsContainers.forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+        container.style.display = showSeconds ? "" : "none";
+      }
+    });
+  });
+}
+
 function initializeTabs() {
   const examTab = document.getElementById("exam-tab");
   const todoTab = document.getElementById("todo-tab");
@@ -174,6 +195,7 @@ function initializeTabs() {
 document.addEventListener("DOMContentLoaded", function () {
   updateCountdown();
   loadThemePreference();
+  loadSecondsVisibility(); // Load seconds visibility setting
   initializeTabs(); // Initialize tab functionality
   initializePopupTodoUI(); // Initialize popup todo UI
   setInterval(updateCountdown, 1000);
@@ -181,5 +203,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const themeToggle = document.getElementById("theme-toggle");
   if (themeToggle) {
     themeToggle.addEventListener("click", toggleTheme);
+  }
+
+  // Listen for changes in widgetVisibility settings
+  if (browser.storage && browser.storage.onChanged) {
+    browser.storage.onChanged.addListener((changes, namespace) => {
+      if (namespace === "sync" && changes.widgetVisibility) {
+        loadSecondsVisibility();
+      }
+    });
   }
 });
