@@ -7,6 +7,159 @@
     <title>JEE & NEET Countdown</title>
   </head>
   <body class="bg-base-200">
+    <!-- Pomodoro Timer -->
+    <div id="pomodoro-timer-container" class="hidden">
+      <div class="flex justify-end">
+        <button id="close-btn" class="m-2 cursor-pointer">
+          <svg
+            width="25px"
+            height="25px"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="Menu / Close_MD">
+              <path
+                id="Vector"
+                d="M18 18L12 12M12 12L6 6M12 12L18 6M12 12L6 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+          </svg>
+        </button>
+      </div>
+      <div
+        id="pomodoro-bg-outer"
+        class="relative bg-base-100 w-88 h-88 mx-auto rounded-full flex justify-center items-center"
+      >
+        <div
+          class="bg-base-100 absolute w-72 h-72 rounded-full flex flex-col justify-center items-center"
+        >
+          <div id="alarm">
+            <button id="alarm-on" class="cursor-pointer">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="30px"
+                width="30px"
+                viewBox="0 -960 960 960"
+                fill="currentColor"
+              >
+                <path
+                  d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-800q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Zm0-360Zm112 168 56-56-128-128v-184h-80v216l152 152ZM224-866l56 56-170 170-56-56 170-170Zm512 0 170 170-56 56-170-170 56-56ZM480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160Z"
+                />
+              </svg>
+            </button>
+            <button id="alarm-off" class="hidden cursor-pointer">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="30px"
+                width="30px"
+                viewBox="0 -960 960 960"
+                fill="currentColor"
+              >
+                <path
+                  d="m798-270-60-60q11-27 16.5-52.5T760-436q0-116-82-200t-198-84q-28 0-54 4.5T374-700l-60-60q38-20 79.5-30t86.5-10q74 0 139.5 28T734-694.5Q783-645 811.5-579T840-436q0 45-11 86.5T798-270Zm52-370L680-810l56-56 170 170-56 56ZM820-24 694-150q-45 33-99.5 51.5T480-80q-74 0-139.5-28T226-184q-49-48-77.5-113T120-436q0-62 18.5-116.5T192-652l-34-34-48 48-56-56 48-48-74-74 56-56L876-80l-56 56ZM480-159q42 0 82-13t74-36L248-594q-23 35-35.5 75.5T200-436q0 116 82 196.5T480-159Zm-38-242Zm114-114Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="text-4xl flex space-x-2">
+            <p id="timer-numeric"></p>
+            <p id="timer-wrd"></p>
+          </div>
+          <div id="pomodoro-btn-container" class="my-2 space-x-2">
+            <button id="play-btn" class="cursor-pointer gap-4">
+              <svg
+                width="15px"
+                height="15px"
+                viewBox="-1 0 12 12"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+              >
+                <title></title>
+                <desc></desc>
+                <defs></defs>
+                <g
+                  id="Page-1"
+                  stroke="none"
+                  stroke-width="1"
+                  fill="none"
+                  fill-rule="evenodd"
+                >
+                  <g
+                    id="Dribbble-Light-Preview"
+                    transform="translate(-65.000000, -3803.000000)"
+                    fill="currentColor"
+                  >
+                    <g id="icons" transform="translate(56.000000, 160.000000)">
+                      <path
+                        d="M18.074,3650.7335 L12.308,3654.6315 C10.903,3655.5815 9,3654.5835 9,3652.8985 L9,3645.1015 C9,3643.4155 10.903,3642.4185 12.308,3643.3685 L18.074,3647.2665 C19.306,3648.0995 19.306,3649.9005 18.074,3650.7335"
+                        id="play-[#1000]"
+                      ></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </button>
+            <button id="pause-btn" class="gap-4 cursor-pointer hidden">
+              <svg
+                width="15px"
+                height="15px"
+                viewBox="-1 0 8 8"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+              >
+                <title></title>
+                <desc></desc>
+                <defs></defs>
+                <g
+                  id="Page-1"
+                  stroke="none"
+                  stroke-width="1"
+                  fill="none"
+                  fill-rule="evenodd"
+                >
+                  <g
+                    id="Dribbble-Light-Preview"
+                    transform="translate(-227.000000, -3765.000000)"
+                    fill="currentColor"
+                  >
+                    <g id="icons" transform="translate(56.000000, 160.000000)">
+                      <path
+                        d="M172,3605 C171.448,3605 171,3605.448 171,3606 L171,3612 C171,3612.552 171.448,3613 172,3613 C172.552,3613 173,3612.552 173,3612 L173,3606 C173,3605.448 172.552,3605 172,3605 M177,3606 L177,3612 C177,3612.552 176.552,3613 176,3613 C175.448,3613 175,3612.552 175,3612 L175,3606 C175,3605.448 175.448,3605 176,3605 C176.552,3605 177,3605.448 177,3606"
+                        id="pause-[#1006]"
+                      ></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </button>
+            <!-- play button converts to pause when the timer starts -->
+            <button id="reset-btn" class="cursor-pointer gap-4">
+              <svg
+                fill="currentColor"
+                width="15px"
+                height="15px"
+                viewBox="0 0 1920 1920"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M960 0v213.333c411.627 0 746.667 334.934 746.667 746.667S1371.627 1706.667 960 1706.667 213.333 1371.733 213.333 960c0-197.013 78.4-382.507 213.334-520.747v254.08H640V106.667H53.333V320h191.04C88.64 494.08 0 720.96 0 960c0 529.28 430.613 960 960 960s960-430.72 960-960S1489.387 0 960 0"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <!-- reset button  -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="p-4 w-96 flex flex-col items-center">
       <header class="flex justify-center items-center mb-6 w-full">
         <h1 class="text-xl font-bold">Exam Countdowns</h1>
@@ -22,6 +175,28 @@
           >
             <path
               d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+            />
+          </svg>
+        </button>
+        <button id="focus-timer" class="cursor-pointer">
+          <svg
+            fill="currentColor"
+            class="w-5 h-5"
+            version="1.1"
+            id="Layer_1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="-351 153 256 256"
+            xml:space="preserve"
+          >
+            <circle cx="-222.3" cy="188.5" r="31.1" />
+            <path
+              d="M-106.6,332.4c-0.4-0.6-0.9-1.1-1.4-1.6l-35.3-32.8l-22.8-49c-6.2-12.5-15.2-20.3-28.6-20.3h-57.5
+	c-13.5,0-22.4,7.8-28.6,20.3l-22.8,49l-35.3,32.8c-0.5,0.5-1,1.1-1.4,1.6c-3.6,3.1-5.9,7.7-5.9,12.8c0,9.3,7.6,16.9,16.9,16.9
+	c5.5,0,10.3-2.6,13.4-6.7c0.3-0.2,0.6-0.5,0.8-0.7l37.4-34.8c1.4-1.4,2.5-3,3.3-4.8l11.9-25.5l-0.6,45l-52.2,28.4
+	c-9.5,5.2-14,16.4-10.6,26.7c3.4,10.3,13.6,16.7,24.3,15.2l78.1-20.2l78.1,20.2c10.7,1.5,21-4.9,24.3-15.2
+	c3.4-10.3-1.1-21.5-10.6-26.7l-52.2-28.5l-0.6-45l11.9,25.5c0.8,1.8,2,3.4,3.3,4.8l37.4,34.8c0.3,0.3,0.5,0.5,0.8,0.7
+	c3.1,4,7.9,6.7,13.4,6.7c9.3,0,16.9-7.6,16.9-16.9C-100.7,340-103,335.5-106.6,332.4z"
             />
           </svg>
         </button>

@@ -213,4 +213,125 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+  timer_numeric.textContent = initial_time;
+  timer_unit = TimeUnit.MINUTE;
 });
+
+// pomodoro timer
+const play_btn = document.querySelector('#play-btn')
+const pause_btn = document.querySelector('#pause-btn');
+const reset_btn = document.querySelector('#reset-btn');
+const alarm_on = document.querySelector('#alarm-on');
+const alarm_off = document.querySelector('#alarm-off');
+const timer_numeric = document.querySelector("#timer-numeric");
+const timer_unit = document.querySelector('#timer-wrd');
+const close_timer_btn = document.querySelector('#close-btn');
+const show_timer_btn = document.querySelector('#focus-timer');
+const pomodoro_timer_container = document.querySelector('#pomodoro-timer-container');
+const TimeUnit = Object.freeze({
+  MINUTE: 'min',
+  HOUR: 'hr',
+  SECOND: 'sec'
+});
+let initial_time = 1; // in minutes
+let timer_id = null;
+let curr_seconds = 0;
+let tt_num = initial_time;
+let time_elapsed = 0;
+
+function reset_initial(){
+  tt_num = initial_time;
+  curr_seconds = 0;
+  time_elapsed = 0;
+  timer_numeric.textContent = tt_num;
+  timer_unit.textContent = TimeUnit.MINUTE;
+  pause_btn.classList.add('hidden');
+  play_btn.classList.remove('hidden');
+  document.querySelector('#pomodoro-bg-outer').style.background = `conic-gradient(
+    #4CAF50 0%,
+    #ccc 0% 100%
+  )`;
+  if(timer_id){
+    clearInterval(timer_id);
+    timer_id=null;
+  }
+}
+function start_timer() {
+  if (timer_id) clearInterval(timer_id);
+  pause_btn.classList.remove('hidden');
+  play_btn.classList.add('hidden');
+  timer_id = setInterval(() => {
+    if (tt_num <= 0 && curr_seconds <= 0) {
+      clearInterval(timer_id);
+      reset_initial();
+      return;
+    }
+    if (curr_seconds <= 0 && tt_num > 0) {
+      tt_num -= 1;
+      curr_seconds = 60;
+    }
+    curr_seconds -= 1;
+    if (tt_num > 0) {
+      timer_numeric.textContent = tt_num;
+      timer_unit.textContent = TimeUnit.MINUTE;
+    } else  {
+      timer_numeric.textContent = curr_seconds;
+      timer_unit.textContent = TimeUnit.SECOND;
+    }
+    time_elapsed++;
+    let progress = (time_elapsed/(initial_time*60))*100;
+    document.querySelector('#pomodoro-bg-outer').style.background = `conic-gradient(
+      #4CAF50 ${progress}%, #ccc 0% 100%)`;
+  }, 1000);
+}
+
+function stop_timer(){
+  if(timer_id) clearInterval(timer_id);
+}
+
+// toggle time upon play/pause click
+function time_toggle(time_toggle_btn){
+  if(time_toggle_btn === play_btn){
+    start_timer();
+  }
+  else{
+    pause_btn.classList.add('hidden');
+    play_btn.classList.remove('hidden');
+    stop_timer();
+  }
+}
+
+function alarm_toggle(alarm_btn){
+  if(alarm_btn === alarm_on){
+    alarm_on.classList.add('hidden');
+    alarm_off.classList.remove('hidden');
+  }
+  else{
+    alarm_off.classList.add('hidden');
+    alarm_on.classList.remove('hidden');
+  }
+}
+
+function timer_toggle(timer_toggle_btn) {
+  reset_initial();
+  if(timer_toggle_btn === close_timer_btn){
+    // close timer
+    close_timer_btn.classList.add('hidden');
+    pomodoro_timer_container.classList.add('hidden');
+    show_timer_btn.classList.remove('hidden');
+  }
+  else{
+    // show timer
+    pomodoro_timer_container.classList.remove('hidden');
+    close_timer_btn.classList.remove('hidden');
+    show_timer_btn.classList.add('hidden');
+  }
+}
+
+play_btn.addEventListener('click',() => time_toggle(play_btn));
+pause_btn.addEventListener('click', () => time_toggle(pause_btn));
+alarm_on.addEventListener('click',() => alarm_toggle(alarm_on));
+alarm_off.addEventListener('click',() => alarm_toggle(alarm_off));
+close_timer_btn.addEventListener('click',() => timer_toggle(close_timer_btn));
+show_timer_btn.addEventListener('click',() => timer_toggle(show_timer_btn));
+reset_btn.addEventListener('click',() => reset_initial());
