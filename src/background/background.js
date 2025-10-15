@@ -110,3 +110,65 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 	}
 	return true;
 });
+
+let timerId = null;
+let time_elapsed = 0;
+let total_seconds = 0;
+let remaining_seconds = 0;
+
+async function resetTimer() {
+  const { initialTime } = await browser.storage.local.get('initialTime');
+  time_elapsed = 0;
+  remaining_seconds = initialTime * 60;
+  browser.storage.local.set({
+    currentMinutes: initialTime,
+    currentSeconds: 0,
+    playBtn: false,
+    timeElapsed: 0
+  });
+  if (timerId) {
+    clearInterval(timerId);
+    timerId = null;
+  }
+}
+
+function startTimer(Timerminutes, Timerseconds) {
+  if (timerId) clearInterval(timerId);
+
+  total_seconds = Timerminutes * 60 + Timerseconds;
+  remaining_seconds = total_seconds;
+  time_elapsed = total_seconds - remaining_seconds;
+
+  timerId = setInterval(async () => {
+    if (remaining_seconds <= 0) {
+      clearInterval(timerId);
+      timerId = null;
+      browser.storage.local.set({ playBtn: false });
+      return;
+    }
+
+    remaining_seconds--;
+    time_elapsed++;
+
+    const currMin = Math.floor(remaining_seconds / 60);
+    const currSec = remaining_seconds % 60;
+
+    browser.storage.local.set({
+      currentMinutes: currMin,
+      currentSeconds: currSec,
+      timeElapsed: time_elapsed
+    });
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerId);
+  timerId = null;
+}
+
+browser.runtime.onMessage.addListener((message) => {
+  if (message.action === 'startTimer') startTimer(message.minutes, message.seconds);
+  else if (message.action === 'continueTimer') startTimer(message.minutes, message.seconds);
+  else if (message.action === 'stopTimer') stopTimer();
+  else if (message.action === 'resetTimer') resetTimer();
+});
